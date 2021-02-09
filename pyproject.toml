@@ -9,6 +9,7 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "^3.9.1"
+pycountry = "^20.7.3"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

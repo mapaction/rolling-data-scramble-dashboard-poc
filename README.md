@@ -25,6 +25,11 @@ $ python3 app.py
 
 ## Setup
 
+You will need [Google Drive for Desktop](https://support.google.com/a/answer/7491144?hl=en) (Google File Stream) 
+installed with suitable permissions to access shared drives.
+
+**Note**: This application uses a hard coded base path to shared drives, meaning it will only work on macOS (see #8).
+
 ```
 $ brew install python
 $ python3 -m pip install poetry
