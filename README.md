@@ -23,6 +23,8 @@ $ cd rolling-data-scramble-dashboard-poc/
 $ python3 app.py
 ```
 
+This will produce a file, `export.json`.
+
 ## Setup
 
 You will need [Google Drive for Desktop](https://support.google.com/a/answer/7491144?hl=en) (Google File Stream) 
