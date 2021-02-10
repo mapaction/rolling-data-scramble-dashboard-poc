@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum, auto
 
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from pycountry import countries
 
@@ -156,9 +156,14 @@ class MapProduct:
         :param base_path: path to the root of the folder representing this product within a Crash Move Folder
         """
         self.base_path: Path = base_path
-        self.map_chef_description_path: Path = (
-            self._get_latest_map_chef_description_path()
-        )
+        if not self.base_path.is_dir():
+            raise MapProductInvalid
+
+        self.map_chef_description_path: Optional[
+            Path
+        ] = self._get_latest_map_chef_description_path()
+        if self.map_chef_description_path is None:
+            raise MapProductInvalid
 
         self.product_id: str = self._get_map_chef_description_property(
             description_property="mapnumber"
@@ -172,13 +177,10 @@ class MapProduct:
 
         self.layers: List[MapLayer] = self._get_map_chef_primary_layers()
 
-        if not self.base_path.is_dir():
-            raise MapProductInvalid
-
     def __repr__(self) -> str:
         return f"<MapProduct id={self.product_id}>"
 
-    def _get_latest_map_chef_description_path(self) -> Path:
+    def _get_latest_map_chef_description_path(self) -> Optional[Path]:
         """
         Determines the MapChef description/output file for the latest product iteration
 
@@ -188,10 +190,16 @@ class MapProduct:
         These file names are determined by PathLib's `glob()` method, which returns a generator of values and therefore
         needs casting to a list for `max()` to work.
 
-        :rtype Path
-        :return: path to the latest MapChef description file
+        Where there isn't a matching file (in cases where MapChef hasn't yet completed an iteration successfully for
+        example) None is returned.
+
+        :rtype Path or None
+        :return: path to the latest MapChef description file or None
         """
-        return max(list(self.base_path.glob("*.json")))
+        try:
+            return max(list(self.base_path.glob("*.json")))
+        except ValueError:
+            return None
 
     def _get_map_chef_description_property(self, description_property: str) -> str:
         """
@@ -292,19 +300,20 @@ class Operation:
             description_path=self.event_description_path,
             description_property="operation_id",
         )
+        if len(self.operation_id) == 0:
+            raise OperationInvalid
+
         self.operation_name = self._get_description_property(
             description_path=self.event_description_path,
             description_property="operation_name",
         )
+
         self.affected_country = countries.get(
             alpha_3=self._get_description_property(
                 description_path=self.event_description_path,
                 description_property="affected_country_iso3",
             )
         )
-
-        if len(self.operation_id) == 0:
-            raise OperationInvalid
 
     def __repr__(self) -> str:
         return f"<Operation id={self.operation_id}>"
@@ -330,8 +339,11 @@ class Operation:
             return description_data[description_property]
 
     def get_map_product(self, map_product_id: str) -> MapProduct:
-        map_product_path: Path = self.map_products_path.joinpath(map_product_id)
-        return MapProduct(base_path=map_product_path)
+        try:
+            map_product_path: Path = self.map_products_path.joinpath(map_product_id)
+            return MapProduct(base_path=map_product_path)
+        except MapProductInvalid:
+            raise OperationInvalid
 
     def export(self) -> Dict[str, str]:
         return {
@@ -441,6 +453,9 @@ def parse_operation_layers(
     MapLayers are returned in a list per Operation so that an association between a layer and it's operation can be
     inferred elsewhere as this can't be set within objects currently [#16].
 
+    Operations that do not include the relevant map product are not included as keys in the returned dict. Operations
+    without this product should be considered invalid and filtered out using the `filter_valid_operations` method [#20].
+
     :type config: Config
     :param config: application configuration
     :type operations: List[Operation]
@@ -451,11 +466,43 @@ def parse_operation_layers(
     layers: Dict[str, List[MapLayer]] = dict()
 
     for operation in operations:
-        layers[operation.operation_id] = operation.get_map_product(
-            map_product_id=config["all_products_product_id"]
-        ).layers
+        try:
+            layers[operation.operation_id] = operation.get_map_product(
+                map_product_id=config["all_products_product_id"]
+            ).layers
+        except OperationInvalid:
+            logging.warning(
+                f"Operation path '{operation.operation_id}' does not appear to be valid, ignoring operation."
+            )
 
     return layers
+
+
+def filter_valid_operations(
+    operations: List[Operation], operation_layers: Dict[str, List[MapLayer]]
+) -> List[Operation]:
+    """
+    Filters a set of Operations to only return those with MapLayers from the 'all layers' MapProduct
+
+    Operations without MapLayers are considered invalid (because they can't be evaluated), however as operations aren't
+    related to their layers [#16], it's not possible to determine valid operations by themselves.
+
+    This method checks to see if an operation has corresponding layers, those that don't are not returned. This is
+    considered a workaround for [#20] and isn't ideal.
+
+    :type operations: List[Operation]
+    :param operations: operations to filter
+    :type operation_layers: Dict[str, List[MapLayer]]
+    :return: layers grouped by Operation ID
+    :rtype operations: List[Operation]
+    :return: filtered operations
+    """
+    valid_operations: List[Operation] = list()
+    for operation in operations:
+        if operation.operation_id in operation_layers.keys():
+            valid_operations.append(operation)
+
+    return valid_operations
 
 
 def generate_evaluations(
@@ -609,6 +656,9 @@ def run() -> None:
 
     operations = parse_operations(config=app_config)
     operation_layers = parse_operation_layers(config=app_config, operations=operations)
+    operations = filter_valid_operations(
+        operations=operations, operation_layers=operation_layers
+    )
     evaluations = generate_evaluations(operation_layers=operation_layers)
     process_evaluations(evaluations=evaluations)
     export_data = generate_export(evaluations=evaluations, operations=operations)
