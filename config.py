@@ -7,6 +7,7 @@ class Config(TypedDict):
     google_drive_operations_path: Path
     rds_operations_cmf_paths: List[Path]
     all_products_product_id: str
+    export_path: Path
 
 
 config: Config = dict()
@@ -24,3 +25,5 @@ config["rds_operations_cmf_paths"] = [
 ]
 
 config["all_products_product_id"] = "MA9999"
+
+config["export_path"] = Path("export.json")
