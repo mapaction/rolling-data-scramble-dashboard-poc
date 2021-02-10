@@ -6,6 +6,7 @@ class Config(TypedDict):
     google_drive_base_path: Path
     google_drive_operations_path: Path
     rds_operations_cmf_paths: List[Path]
+    all_products_product_id: str
 
 
 config: Config = dict()
@@ -21,3 +22,5 @@ config["rds_operations_cmf_paths"] = [
     Path("2021-moz-001"),
     Path("rolling-data-scramble-south-sudan/2020ssd001"),
 ]
+
+config["all_products_product_id"] = "MA9999"
