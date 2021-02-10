@@ -31,6 +31,36 @@ class MapProductInvalid(Exception):
     pass
 
 
+class EvaluationResult(Enum):
+    """
+    An enumeration of possible states for the result for an Evaluation
+
+    Includes 'resolved' states, where an Evaluation successfully took place (e.g. pass, fail, etc.) and 'unresolved'
+    states, where an Evaluation could not, or has not, taken place (e.g. because it hasn't happened yet, or an error
+    occurred in the evaluation logic itself).
+
+    Integer values for these these enumerated states are assigned automatically using the `auto()` method. The first
+    state will `0`, the second `1` etc. This means the order statues are defined in matters.
+
+    In this case, statues should be ordered from least to most significant (i.e. an Evaluation that fails is said to be
+    more significant than one that has passed). This is to support situations where evaluations may examine multiple
+    factors, which when taken together, should be based on the most significant evaluation.
+
+    E.g. If an evaluation has three factors, the first a PASS, the second, a FAIL and the third a PASS, the FAIL
+    evaluation should be used as the overall evaluation because it's the most significant.
+
+    By assigning a higher numerical value to more significant statuses, we can use logical comparisons in a for loop to
+    check if the current evaluation status is more or less significant than the most significant previous status. This
+    logic is probably easiest to understand in context rather than as a verbose description.
+    """
+
+    NOT_EVALUATED = auto()
+    PASS = auto()
+    PASS_WITH_WARNINGS = auto()
+    FAIL = auto()
+    ERROR = auto()
+
+
 class MapChefError(Enum):
     """
     An enumeration of possible error conditions reported by MapChef
@@ -299,6 +329,62 @@ class Operation:
         return MapProduct(base_path=map_product_path)
 
 
+class Evaluation:
+    """
+    Represents the status of a layer for a operation
+
+    I.e. the cells in the dashboard.
+
+    Evaluations are effectively key value pairs, where the key is a composite of an operation and a layer, and the
+    value is whether that layer for that operation has any errors reported by MapChef.
+
+    Evaluations are stateful, in that evaluations are initially unevaluated then later evaluated by calling the
+    `evaluate()` method.
+
+    The `error_mapping` dict is used to determine which result to use for each error, the most severe of which will
+    be the overall evaluation result.
+    """
+
+    error_mapping: Dict[MapChefError, EvaluationResult] = {
+        MapChefError.LAYER_DATASOURCE_NONE: EvaluationResult.FAIL,
+        MapChefError.LAYER_DATASOURCE_MULTIPLE: EvaluationResult.PASS_WITH_WARNINGS,
+        MapChefError.LAYER_SCHEMA_INVALID: EvaluationResult.PASS_WITH_WARNINGS,
+    }
+
+    def __init__(self, operation_id: str, layer: MapLayer):
+        """
+        :type operation_id: str
+        :param operation_id: operation ID
+        :type layer: MapLayer
+        :param layer: layer
+        """
+        self.operation_id: str = operation_id
+        self.layer: MapLayer = layer
+
+        self.result: EvaluationResult = EvaluationResult.NOT_EVALUATED
+
+    def __repr__(self) -> str:
+        return f"<Evaluation operation_id={self.operation_id} layer_id={self.layer.layer_id} result={self.result.name}>"
+
+    def evaluate(self) -> None:
+        """
+        Evaluates a layer by checking whether it has any errors
+
+        If not, the layer is considered to pass.
+
+        Otherwise each error is mapped to a result ('pass with warnings' or fail) based on the error mapping. This
+        result is then checked to see whether it is more significant than other results (i.e. more severe). See the
+        notes in the EvaluationResult class for more information.
+        """
+        if len(self.layer.errors) == 0:
+            self.result = EvaluationResult.PASS
+
+        for error in self.layer.errors:
+            result = self.error_mapping[error]
+            if result.value > self.result.value:
+                self.result = result
+
+
 def parse_operations(config: Config) -> List[Operation]:
     """
     Processes Operations for a set of operation IDs
@@ -359,6 +445,42 @@ def parse_operation_layers(
     return layers
 
 
+def generate_evaluations(
+    operation_layers: Dict[str, List[MapLayer]]
+) -> List[Evaluation]:
+    """
+    Initialises Evaluations for a set of Operations and MapLayers
+
+    As MapLayers are not linked to their operations [#16], this method uses additional context to set this for each
+    operation:layer composite.
+
+    Note: this method only initialises evaluations, rather than perform them.
+
+    :type operation_layers: Dict[str, List[MapLayer]]
+    :param operation_layers: layers grouped by Operation ID
+    :rtype List[Evaluation]
+    :return: initialised evaluations
+    """
+    evaluations: List[Evaluation] = list()
+
+    for operation_id, operation_layers in operation_layers.items():
+        for operation_layer in operation_layers:
+            evaluations.append(
+                Evaluation(operation_id=operation_id, layer=operation_layer)
+            )
+
+    return evaluations
+
+
+def process_evaluations(evaluations: List[Evaluation]) -> None:
+    """
+    :type evaluations: List[Evaluation]
+    :param evaluations: evaluations to process
+    """
+    for evaluation in evaluations:
+        evaluation.evaluate()
+
+
 def run() -> None:
     """
     Simple method to call functions and configure the application
@@ -367,9 +489,13 @@ def run() -> None:
 
     operations = parse_operations(config=app_config)
     operation_layers = parse_operation_layers(config=app_config, operations=operations)
+    evaluations = generate_evaluations(operation_layers=operation_layers)
+    process_evaluations(evaluations=evaluations)
 
     # debug
-    print(operations)
+    print(len(evaluations))
+    for evaluation in evaluations:
+        print(evaluation)
 
 
 if __name__ == "__main__":
