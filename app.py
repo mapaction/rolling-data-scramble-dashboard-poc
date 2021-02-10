@@ -27,11 +27,13 @@ class Operation:
     In abstract terms, this class represents an activation for a given country (an operation).
     In concrete terms, this class represents properties of a Crash Move Folder (CMF) for a given activation.
 
-    This class is currently minimal, with properties and methods needed for the Rolling Data Scramble dashboard.
-    It's very likely there's a better way to do this, see [#13] for discussion. With the exception of the root to the
-    Crash Move Folder, all class instance properties are loaded dynamically from the `event_description.json` or
-    `cmf_description.json` configuration files.
+    For the purposes of the Rolling Data Scramble dashboard, operations represent the rows in the dashboard.
 
+    With the exception of the root to the Crash Move Folder, all class instance properties are loaded dynamically from
+    the `event_description.json` or `cmf_description.json` configuration files.
+
+    As with other classes, only methods and properties required for the Rolling Data Scramble dashboard are included.
+    It's very likely there's a better way to do this, see [#13] for discussion.
     """
 
     def __init__(self, base_path: Path):
@@ -103,15 +105,16 @@ class Operation:
 
 def parse_operations(config: Config) -> List[Operation]:
     """
-    Processes the configured list of operation IDs into a list of valid Operation class instances
+    Processes Operations for a set of operation IDs
 
     Minimal validation of each operation is performed, namely:
      - does the path to the operation/CMF exist?
      - can the operation/CMF be instantiated as an Operation class instance
 
-    Basic validation
-    :param config:
-    :return:
+    :type config: Config
+    :param config: application configuration
+    :rtype List[Operation]
+    :return: parsed, valid, operations
     """
     operations: List[Operation] = list()
 
