@@ -366,7 +366,7 @@ def run() -> None:
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     operations = parse_operations(config=app_config)
-    operation_layers = parse_operation_layers(operations=operations)
+    operation_layers = parse_operation_layers(config=app_config, operations=operations)
 
     # debug
     print(operations)
