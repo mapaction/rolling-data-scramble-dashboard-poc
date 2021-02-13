@@ -12,6 +12,21 @@ from pycountry import countries
 from config import Config, config as app_config
 
 
+#-----------
+
+import pandas as pd
+import numpy as np
+import time
+
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+from df2gspread import df2gspread as d2g
+from config import Config, config as app_config
+
+#-----------
+
+
+
 # @todo: read from future package / pyproject.toml
 app_version = "0.1.0"
 
@@ -648,6 +663,46 @@ def export_json(export_data: dict, export_path: Path) -> None:
         json.dump(obj=export_data, fp=export_file, indent=4, sort_keys=True)
 
 
+def read_export_json(export_json_name):
+    
+    input_data = json.load(open(export_json_name))
+    error_df = pd.DataFrame()
+    country_names = []
+
+
+    for country_operation in input_data['data']['operations']:
+        country_results_by_operation = input_data['data']['results_by_operation'][country_operation['id']]
+        country_df = (pd.DataFrame(pd.Series(list(country_results_by_operation.values())))).T
+        error_df = pd.concat([error_df,country_df])
+        country_names.append(country_operation['affected_country_name'])
+
+    error_df.index = country_names
+    error_df.columns = list(input_data['data']['results_by_layer'].keys())
+    
+    return error_df
+
+
+def write_google_spreadsheet(config):
+       
+    scope = ['https://spreadsheets.google.com/feeds'] 
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(config["service_credential"], scope) 
+    
+    localtime = time.localtime(time.time())
+    
+    sheet_name_1 = 'last_output'
+    sheet_name_2 = 'output'+ '_' + str(localtime.tm_year) + '_' + ('0'+str(localtime.tm_mon))[-2:] + '_' +  ('0'+str(localtime.tm_mday))[-2:]
+        
+    error_df = read_export_json(config["export_path"])
+
+    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_1, credentials=credentials, row_names=True, col_names=True)
+    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_2, credentials=credentials, row_names=True, col_names=True)
+
+    
+    return
+
+
+
+
 def run() -> None:
     """
     Simple method to call functions and configure the application
@@ -663,6 +718,8 @@ def run() -> None:
     process_evaluations(evaluations=evaluations)
     export_data = generate_export(evaluations=evaluations, operations=operations)
     export_json(export_data=export_data, export_path=app_config["export_path"])
+    write_google_spreadsheet(config = app_config)
+
 
 
 if __name__ == "__main__":
