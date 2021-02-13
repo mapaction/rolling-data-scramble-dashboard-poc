@@ -1,6 +1,9 @@
 import logging
 import sys
 import json
+import pandas as pd
+import numpy as np
+import time
 from datetime import datetime
 from enum import Enum, auto
 
@@ -11,19 +14,10 @@ from pycountry import countries
 
 from config import Config, config as app_config
 
-
-#-----------
-
-import pandas as pd
-import numpy as np
-import time
-
 from oauth2client.service_account import ServiceAccountCredentials
-import gspread
 from df2gspread import df2gspread as d2g
 from config import Config, config as app_config
 
-#-----------
 
 
 
@@ -663,12 +657,19 @@ def export_json(export_data: dict, export_path: Path) -> None:
         json.dump(obj=export_data, fp=export_file, indent=4, sort_keys=True)
 
 
-def read_export_json(export_json_name):
+def read_export_json(config) -> pd.DataFrame:
+    """
+    WIP - Read the export JSON and create a DatFrame from it
+
+    :type config: Config
+    :param config: application configuration
+    :rtype pd.DataFrame
+    :return: error codes per layer and per country
+    """
     
-    input_data = json.load(open(export_json_name))
+    input_data = json.load(open(config["export_path"]))
     error_df = pd.DataFrame()
     country_names = []
-
 
     for country_operation in input_data['data']['operations']:
         country_results_by_operation = input_data['data']['results_by_operation'][country_operation['id']]
@@ -682,7 +683,19 @@ def read_export_json(export_json_name):
     return error_df
 
 
-def aggregate_layers(error_df,config):
+def aggregate_layers(config,error_df) -> pd.DataFrame:
+    """
+    WIP - Aggregates error codes per category of layer
+    The categories follow the Map Action naming convention. For each category, we pick 
+    the "worst" layer according to the following order: 'ERROR','FAIL','NOT_EVALUATED','PASS_WITH_WARNINGS','PASS'
+
+    :type config: Config
+    :param config: application configuration
+    :type error_df: pd.DataFrame
+    :param error_df: error codes per layer and per country
+    :rtype pd.DataFrame
+    :return: error code aggregated by category (and by country)
+    """
     
     agg_df = error_df.copy()
 
@@ -708,22 +721,33 @@ def aggregate_layers(error_df,config):
     
  
 
-def write_google_spreadsheet(config):
-       
-    scope = ['https://spreadsheets.google.com/feeds'] 
+def write_google_spreadsheet(config) -> None:
+    """
+    WIP - Writes results stored on the export JSON to a google spreadsheet 
+    Spreadsheet link : https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/
+
+    Three sheets are created:
+    	1. a summary of error codes from the last run (layers aggregated by category)
+    	2. all error codes from the last run (one per layer)
+    	3. all error codes from the last run of the day (adds one sheet every new day the code is run) 
+
+    :type config: Config
+    :param config: application configuration
+    """
+    
     credentials = ServiceAccountCredentials.from_json_keyfile_name(config["service_credential"], config["spreadsheet_scope"]) 
     
     localtime = time.localtime(time.time())
     sheet_name_today = 'output'+ '_' + str(localtime.tm_year) + '_' + ('0'+str(localtime.tm_mon))[-2:] + '_' +  ('0'+str(localtime.tm_mday))[-2:]
         
-    error_df = read_export_json(config["export_path"]) 
-    agg_df =  aggregate_layers(error_df,config)
+    error_df = read_export_json(config) 
+    agg_df =  aggregate_layers(config,error_df)
 
     d2g.upload(agg_df, config["spreadsheet_key"], wks_name = config["sheet_name_summary"], credentials=credentials, row_names=True, col_names=True)
     d2g.upload(error_df, config["spreadsheet_key"], wks_name = config["sheet_name_complete"], credentials=credentials, row_names=True, col_names=True)
     d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_today, credentials=credentials, row_names=True, col_names=True)
     
-    return
+    
 
 
 
