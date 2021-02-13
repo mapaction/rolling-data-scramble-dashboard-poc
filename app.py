@@ -445,7 +445,7 @@ def parse_operations(config: Config) -> List[Operation]:
             config["google_drive_operations_path"], operation_path
         )
         try:
-            operation_path.resolve(strict=True)
+            #operation_path.resolve(strict=True)
             operations.append(Operation(base_path=operation_path))
         except FileNotFoundError:
             logging.warning(
@@ -682,24 +682,48 @@ def read_export_json(export_json_name):
     return error_df
 
 
+def aggregate_layers(error_df,config):
+    
+    agg_df = error_df.copy()
+
+    for col in config["category_value"]:
+        agg_df[col] = 'PASS'
+
+    agg_df = agg_df[config["category_value"]]
+
+    agg_names_dict = {}
+    for col_ref in config["category_value"]: 
+        agg_names_dict[col_ref] = []
+        for col in error_df.columns:     
+            if col_ref in col :
+                 agg_names_dict[col_ref].append(col)
+
+    for col_ref in config["category_value"]: 
+        agg_df[col_ref] = error_df[agg_names_dict[col_ref]].replace(config["error_codes"],[0,1,2,3,4]).min(axis = 1)
+    agg_df.replace([0,1,2,3,4],config["error_codes"],inplace = True)
+    agg_df.columns = config["category_description"]
+
+    
+    return(agg_df)
+    
+ 
+
 def write_google_spreadsheet(config):
        
     scope = ['https://spreadsheets.google.com/feeds'] 
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(config["service_credential"], scope) 
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(config["service_credential"], config["spreadsheet_scope"]) 
     
     localtime = time.localtime(time.time())
-    
-    sheet_name_1 = 'last_output'
-    sheet_name_2 = 'output'+ '_' + str(localtime.tm_year) + '_' + ('0'+str(localtime.tm_mon))[-2:] + '_' +  ('0'+str(localtime.tm_mday))[-2:]
+    sheet_name_today = 'output'+ '_' + str(localtime.tm_year) + '_' + ('0'+str(localtime.tm_mon))[-2:] + '_' +  ('0'+str(localtime.tm_mday))[-2:]
         
-    error_df = read_export_json(config["export_path"])
+    error_df = read_export_json(config["export_path"]) 
+    agg_df =  aggregate_layers(error_df,config)
 
-    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_1, credentials=credentials, row_names=True, col_names=True)
-    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_2, credentials=credentials, row_names=True, col_names=True)
-
+    d2g.upload(agg_df, config["spreadsheet_key"], wks_name = config["sheet_name_summary"], credentials=credentials, row_names=True, col_names=True)
+    d2g.upload(error_df, config["spreadsheet_key"], wks_name = config["sheet_name_complete"], credentials=credentials, row_names=True, col_names=True)
+    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_today, credentials=credentials, row_names=True, col_names=True)
     
     return
-
 
 
 
