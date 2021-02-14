@@ -752,9 +752,12 @@ def write_google_spreadsheet(config) -> None:
 
     error_df = read_export_json(config)
     agg_df = aggregate_layers(config, error_df)
+    
+    error_df.replace('PASS_WITH_WARNINGS', 'WARNING', inplace=True)
+    agg_df.replace('PASS_WITH_WARNINGS', 'WARNING', inplace=True)
 
     d2g.upload(
-        agg_df,
+        agg_df.T,
         config["spreadsheet_key"],
         wks_name=config["sheet_name_summary"],
         credentials=credentials,
@@ -762,7 +765,7 @@ def write_google_spreadsheet(config) -> None:
         col_names=True,
     )
     d2g.upload(
-        error_df,
+        error_df.T,
         config["spreadsheet_key"],
         wks_name=config["sheet_name_complete"],
         credentials=credentials,
@@ -770,7 +773,7 @@ def write_google_spreadsheet(config) -> None:
         col_names=True,
     )
     d2g.upload(
-        error_df,
+        error_df.T,
         config["spreadsheet_key"],
         wks_name=sheet_name_today,
         credentials=credentials,
