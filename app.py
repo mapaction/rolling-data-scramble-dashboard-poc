@@ -19,8 +19,6 @@ from df2gspread import df2gspread as d2g
 from config import Config, config as app_config
 
 
-
-
 # @todo: read from future package / pyproject.toml
 app_version = "0.1.0"
 
@@ -439,7 +437,7 @@ def parse_operations(config: Config) -> List[Operation]:
             config["google_drive_operations_path"], operation_path
         )
         try:
-            #operation_path.resolve(strict=True)
+            # operation_path.resolve(strict=True)
             operations.append(Operation(base_path=operation_path))
         except FileNotFoundError:
             logging.warning(
@@ -666,27 +664,31 @@ def read_export_json(config) -> pd.DataFrame:
     :rtype pd.DataFrame
     :return: error codes per layer and per country
     """
-    
+
     input_data = json.load(open(config["export_path"]))
     error_df = pd.DataFrame()
     country_names = []
 
-    for country_operation in input_data['data']['operations']:
-        country_results_by_operation = input_data['data']['results_by_operation'][country_operation['id']]
-        country_df = (pd.DataFrame(pd.Series(list(country_results_by_operation.values())))).T
-        error_df = pd.concat([error_df,country_df])
-        country_names.append(country_operation['affected_country_name'])
+    for country_operation in input_data["data"]["operations"]:
+        country_results_by_operation = input_data["data"]["results_by_operation"][
+            country_operation["id"]
+        ]
+        country_df = (
+            pd.DataFrame(pd.Series(list(country_results_by_operation.values())))
+        ).T
+        error_df = pd.concat([error_df, country_df])
+        country_names.append(country_operation["affected_country_name"])
 
     error_df.index = country_names
-    error_df.columns = list(input_data['data']['results_by_layer'].keys())
-    
+    error_df.columns = list(input_data["data"]["results_by_layer"].keys())
+
     return error_df
 
 
-def aggregate_layers(config,error_df) -> pd.DataFrame:
+def aggregate_layers(config, error_df) -> pd.DataFrame:
     """
     WIP - Aggregates error codes per category of layer
-    The categories follow the Map Action naming convention. For each category, we pick 
+    The categories follow the Map Action naming convention. For each category, we pick
     the "worst" layer according to the following order: 'ERROR','FAIL','NOT_EVALUATED','PASS_WITH_WARNINGS','PASS'
 
     :type config: Config
@@ -696,59 +698,89 @@ def aggregate_layers(config,error_df) -> pd.DataFrame:
     :rtype pd.DataFrame
     :return: error code aggregated by category (and by country)
     """
-    
+
     agg_df = error_df.copy()
 
     for col in config["category_value"]:
-        agg_df[col] = 'PASS'
+        agg_df[col] = "PASS"
 
     agg_df = agg_df[config["category_value"]]
 
     agg_names_dict = {}
-    for col_ref in config["category_value"]: 
+    for col_ref in config["category_value"]:
         agg_names_dict[col_ref] = []
-        for col in error_df.columns:     
-            if col_ref in col :
-                 agg_names_dict[col_ref].append(col)
+        for col in error_df.columns:
+            if col_ref in col:
+                agg_names_dict[col_ref].append(col)
 
-    for col_ref in config["category_value"]: 
-        agg_df[col_ref] = error_df[agg_names_dict[col_ref]].replace(config["error_codes"],[0,1,2,3,4]).min(axis = 1)
-    agg_df.replace([0,1,2,3,4],config["error_codes"],inplace = True)
+    for col_ref in config["category_value"]:
+        agg_df[col_ref] = (
+            error_df[agg_names_dict[col_ref]]
+            .replace(config["error_codes"], [0, 1, 2, 3, 4])
+            .min(axis=1)
+        )
+    agg_df.replace([0, 1, 2, 3, 4], config["error_codes"], inplace=True)
     agg_df.columns = config["category_description"]
 
-    
-    return(agg_df)
-    
- 
+    return agg_df
+
 
 def write_google_spreadsheet(config) -> None:
     """
-    WIP - Writes results stored on the export JSON to a google spreadsheet 
+    WIP - Writes results stored on the export JSON to a google spreadsheet
     Spreadsheet link : https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/
 
     Three sheets are created:
-    	1. a summary of error codes from the last run (layers aggregated by category)
-    	2. all error codes from the last run (one per layer)
-    	3. all error codes from the last run of the day (adds one sheet every new day the code is run) 
+        1. a summary of error codes from the last run (layers aggregated by category)
+        2. all error codes from the last run (one per layer)
+        3. all error codes from the last run of the day (adds one sheet every new day the code is run)
 
     :type config: Config
     :param config: application configuration
     """
-    
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(config["service_credential"], config["spreadsheet_scope"]) 
-    
+
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        config["service_credential"], config["spreadsheet_scope"]
+    )
+
     localtime = time.localtime(time.time())
-    sheet_name_today = 'output'+ '_' + str(localtime.tm_year) + '_' + ('0'+str(localtime.tm_mon))[-2:] + '_' +  ('0'+str(localtime.tm_mday))[-2:]
-        
-    error_df = read_export_json(config) 
-    agg_df =  aggregate_layers(config,error_df)
+    sheet_name_today = (
+        "output"
+        + "_"
+        + str(localtime.tm_year)
+        + "_"
+        + ("0" + str(localtime.tm_mon))[-2:]
+        + "_"
+        + ("0" + str(localtime.tm_mday))[-2:]
+    )
 
-    d2g.upload(agg_df, config["spreadsheet_key"], wks_name = config["sheet_name_summary"], credentials=credentials, row_names=True, col_names=True)
-    d2g.upload(error_df, config["spreadsheet_key"], wks_name = config["sheet_name_complete"], credentials=credentials, row_names=True, col_names=True)
-    d2g.upload(error_df, config["spreadsheet_key"], wks_name = sheet_name_today, credentials=credentials, row_names=True, col_names=True)
-    
-    
+    error_df = read_export_json(config)
+    agg_df = aggregate_layers(config, error_df)
 
+    d2g.upload(
+        agg_df,
+        config["spreadsheet_key"],
+        wks_name=config["sheet_name_summary"],
+        credentials=credentials,
+        row_names=True,
+        col_names=True,
+    )
+    d2g.upload(
+        error_df,
+        config["spreadsheet_key"],
+        wks_name=config["sheet_name_complete"],
+        credentials=credentials,
+        row_names=True,
+        col_names=True,
+    )
+    d2g.upload(
+        error_df,
+        config["spreadsheet_key"],
+        wks_name=sheet_name_today,
+        credentials=credentials,
+        row_names=True,
+        col_names=True,
+    )
 
 
 def run() -> None:
@@ -766,8 +798,7 @@ def run() -> None:
     process_evaluations(evaluations=evaluations)
     export_data = generate_export(evaluations=evaluations, operations=operations)
     export_json(export_data=export_data, export_path=app_config["export_path"])
-    write_google_spreadsheet(config = app_config)
-
+    write_google_spreadsheet(config=app_config)
 
 
 if __name__ == "__main__":
