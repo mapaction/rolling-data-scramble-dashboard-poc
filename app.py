@@ -2,7 +2,6 @@ import logging
 import sys
 import json
 import pandas as pd
-import numpy as np
 import time
 from datetime import datetime
 from enum import Enum, auto
@@ -11,9 +10,6 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 from pycountry import countries
-
-from config import Config, config as app_config
-
 from oauth2client.service_account import ServiceAccountCredentials
 from df2gspread import df2gspread as d2g
 from config import Config, config as app_config
