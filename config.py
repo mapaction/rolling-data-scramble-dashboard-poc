@@ -28,7 +28,7 @@ config["all_products_product_id"] = "MA9999"
 
 config["export_path"] = Path("export.json")
 
-config["service_credential"] = Path("spreadsheet_credential.json")
+config["service_credential"] = Path("google-application-credentials.json")
 config["spreadsheet_scope"] = ["https://spreadsheets.google.com/feeds"]
 config["spreadsheet_key"] = "1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8"
 config["sheet_name_summary"] = "Summary"
