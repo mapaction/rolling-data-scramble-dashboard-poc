@@ -836,9 +836,9 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
 
 def run() -> None:
     """
-    Simple method to call functions and configure the application
+    Simple method to chain functions together and configure the application
     """
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
     operations = parse_operations(config=app_config)
     operation_layers = parse_operation_layers(config=app_config, operations=operations)
