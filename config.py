@@ -34,13 +34,3 @@ config["spreadsheet_key"] = "1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8"
 config["sheet_name_summary"] = "Summary"
 config["sheet_name_complete"] = "All layers"
 
-config["category_value"] = ["admn", "carto", "elev", "phys", "stle", "tran"]
-config["category_description"] = [
-    "Admin",
-    "Cartographic",
-    "Elevation",
-    "Physical features",
-    "Settlements",
-    "Transport",
-]
-config["error_codes"] = ["ERROR", "FAIL", "NOT_EVALUATED", "PASS_WITH_WARNINGS", "PASS"]

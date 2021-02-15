@@ -647,9 +647,13 @@ def prepare_export(
     """
     export_version: int = 1
 
-    _operations = []
+    _operations: List[dict] = []
+    _operations_by_id: Dict[str, dict] = {}
+    _countries: Dict[str, str] = {}
     for operation in operations:
         _operations.append(operation.export())
+        _operations_by_id[operation.operation_id] = operation.export()
+        _countries[operation.affected_country.alpha_3] = operation.affected_country.name
 
     _results_by_operation: Dict[str, dict] = dict()
     _results_by_layer: Dict[str, dict] = dict()
@@ -694,9 +698,28 @@ def prepare_export(
             "app_version": app_version,
             "export_version": export_version,
             "export_datetime": datetime.utcnow().isoformat(timespec="milliseconds"),
+            "display_labels": {
+                "result_types": {
+                    EvaluationResult.NOT_EVALUATED.name: "Not Evaluated",
+                    EvaluationResult.PASS.name: "Pass",
+                    EvaluationResult.PASS_WITH_WARNINGS.name: "Warning",
+                    EvaluationResult.FAIL.name: "Fail",
+                    EvaluationResult.ERROR.name: "Error",
+                },
+                "layer_aggregation_categories": {
+                    "admn": "Admin",
+                    "carto": "Cartographic",
+                    "elev": "Elevation",
+                    "phys": "Physical features",
+                    "stle": "Settlements",
+                    "tran": "Transport",
+                },
+            },
         },
         "data": {
             "operations": _operations,
+            "operations_by_id": _operations_by_id,
+            "countries": _countries,
             "results_by_operation": _results_by_operation,
             "results_by_layer": _results_by_layer,
             "results_by_result": _results_by_result,
