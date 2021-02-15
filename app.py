@@ -544,7 +544,90 @@ def process_evaluations(evaluations: List[Evaluation]) -> None:
         evaluation.evaluate()
 
 
-def generate_export(evaluations: List[Evaluation], operations: List[Operation]) -> dict:
+def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
+    """
+    WIP - Aggregates and summarises evaluation results for use in exports
+
+    Summarises evaluations by:
+        1. totalling each result type, across all operations and layers
+        2. totalling each result type, by each operation
+        3. aggregating results for each operation and layer
+
+    For (3), the most significant (serve) result in each aggregation is used as the aggregated result (e.g. if the
+    results in an aggregation are [PASS, FAIL, PASS_WITH_WARNINGS] the aggregated result will be FAIL. See the
+    EvaluationResult enumeration for more information on the significance of each result type. The aggregations are
+    based on the MapAction Data Naming Conventions [1], specifically the Category clause [2].
+
+    [1] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10137499820/MapAction+Data+Naming+Convention
+    [2] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10294491254/MapAction+Data+Naming+Convention+Values#MapActionDataNamingConventionValues-category
+
+    :type evaluations: List[Evaluation]
+    :param evaluations: list of evaluations
+    :rtype summary_evaluations: Dict
+    :return summary_evaluations: summarised evaluations
+    """
+    _totals_by_result = {
+        EvaluationResult.NOT_EVALUATED.name: 0,
+        EvaluationResult.PASS.name: 0,
+        EvaluationResult.PASS_WITH_WARNINGS.name: 0,
+        EvaluationResult.FAIL.name: 0,
+        EvaluationResult.ERROR.name: 0,
+    }
+    _totals_by_result_by_operation = {}
+    _aggregated_layer_results_by_operation = {}
+
+    for evaluation in evaluations:
+        if evaluation.operation_id not in _totals_by_result_by_operation.keys():
+            _totals_by_result_by_operation[evaluation.operation_id]: Dict[str, int] = {
+                EvaluationResult.NOT_EVALUATED.name: 0,
+                EvaluationResult.PASS.name: 0,
+                EvaluationResult.PASS_WITH_WARNINGS.name: 0,
+                EvaluationResult.FAIL.name: 0,
+                EvaluationResult.ERROR.name: 0,
+            }
+        _totals_by_result[evaluation.result.name] += 1
+        _totals_by_result_by_operation[evaluation.operation_id][
+            evaluation.result.name
+        ] += 1
+
+        layer_category = evaluation.layer.layer_id.split(sep="-")[1]
+        if evaluation.operation_id not in _aggregated_layer_results_by_operation.keys():
+            _aggregated_layer_results_by_operation[evaluation.operation_id]: Dict[
+                str, str
+            ] = dict()
+        if (
+            layer_category
+            not in _aggregated_layer_results_by_operation[
+                evaluation.operation_id
+            ].keys()
+        ):
+            _aggregated_layer_results_by_operation[evaluation.operation_id][
+                layer_category
+            ] = EvaluationResult.NOT_EVALUATED.name
+        if (
+            evaluation.result.value
+            > EvaluationResult[
+                _aggregated_layer_results_by_operation[evaluation.operation_id][
+                    layer_category
+                ]
+            ].value
+        ):
+            _aggregated_layer_results_by_operation[evaluation.operation_id][
+                layer_category
+            ] = evaluation.result.name
+
+    return {
+        "totals_by_result": _totals_by_result,
+        "totals_by_result_by_operation": _totals_by_result_by_operation,
+        "aggregated_layer_results_by_operation": _aggregated_layer_results_by_operation,
+    }
+
+
+def prepare_export(
+    evaluations: List[Evaluation],
+    summary_evaluations: Dict[str, dict],
+    operations: List[Operation],
+) -> dict:
     """
     WIP - Structures data results of evaluations for use in an export
 
@@ -555,6 +638,8 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
 
     :type evaluations: List[Evaluation]
     :param evaluations: list of evaluations
+    :type summary_evaluations: Dict
+    :param summary_evaluations: summarised evaluations
     :type operations: List[Operation]
     :param operations: list of operations
     :rtype dict
@@ -604,21 +689,6 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
             }
         )
 
-    _summary_statistics: Dict[str, dict] = dict()
-    _summary_statistics["results"]: Dict[str, int] = {
-        EvaluationResult.NOT_EVALUATED.name: len(
-            _results_by_result[EvaluationResult.NOT_EVALUATED.name]
-        ),
-        EvaluationResult.PASS.name: len(_results_by_result[EvaluationResult.PASS.name]),
-        EvaluationResult.PASS_WITH_WARNINGS.name: len(
-            _results_by_result[EvaluationResult.PASS_WITH_WARNINGS.name]
-        ),
-        EvaluationResult.FAIL.name: len(_results_by_result[EvaluationResult.FAIL.name]),
-        EvaluationResult.ERROR.name: len(
-            _results_by_result[EvaluationResult.ERROR.name]
-        ),
-    }
-
     return {
         "meta": {
             "app_version": app_version,
@@ -631,7 +701,7 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
             "results_by_layer": _results_by_layer,
             "results_by_result": _results_by_result,
             "ungrouped_results": _ungrouped_results,
-            "summary_statistics": _summary_statistics,
+            "summary_statistics": summary_evaluations,
         },
     }
 
@@ -680,45 +750,6 @@ def read_export_json(config) -> pd.DataFrame:
 
     return error_df
 
-
-def aggregate_layers(config, error_df) -> pd.DataFrame:
-    """
-    WIP - Aggregates error codes per category of layer
-    The categories follow the Map Action naming convention. For each category, we pick
-    the "worst" layer according to the following order: 'ERROR','FAIL','NOT_EVALUATED','PASS_WITH_WARNINGS','PASS'
-
-    :type config: Config
-    :param config: application configuration
-    :type error_df: pd.DataFrame
-    :param error_df: error codes per layer and per country
-    :rtype pd.DataFrame
-    :return: error code aggregated by category (and by country)
-    """
-
-    agg_df = error_df.copy()
-
-    for col in config["category_value"]:
-        agg_df[col] = "PASS"
-
-    agg_df = agg_df[config["category_value"]]
-
-    agg_names_dict = {}
-    for col_ref in config["category_value"]:
-        agg_names_dict[col_ref] = []
-        for col in error_df.columns:
-            if col_ref in col:
-                agg_names_dict[col_ref].append(col)
-
-    for col_ref in config["category_value"]:
-        agg_df[col_ref] = (
-            error_df[agg_names_dict[col_ref]]
-            .replace(config["error_codes"], [0, 1, 2, 3, 4])
-            .min(axis=1)
-        )
-    agg_df.replace([0, 1, 2, 3, 4], config["error_codes"], inplace=True)
-    agg_df.columns = config["category_description"]
-
-    return agg_df
 
 
 def write_google_spreadsheet(config) -> None:
@@ -795,7 +826,12 @@ def run() -> None:
     )
     evaluations = generate_evaluations(operation_layers=operation_layers)
     process_evaluations(evaluations=evaluations)
-    export_data = generate_export(evaluations=evaluations, operations=operations)
+    summary_evaluations = summarise_evaluations(evaluations=evaluations)
+    export_data = prepare_export(
+        evaluations=evaluations,
+        summary_evaluations=summary_evaluations,
+        operations=operations,
+    )
     export_json(export_data=export_data, export_path=app_config["export_path"])
     write_google_spreadsheet(config=app_config)
 
