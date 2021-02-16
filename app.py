@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum, auto
 
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from oauth2client import service_account
 from pycountry import countries
@@ -81,6 +81,7 @@ class MapChefError(Enum):
     LAYER_DATASOURCE_NONE = "Unable to find dataset for this layer"
     LAYER_DATASOURCE_MULTIPLE = "Found multiple datasets which match this layer"
     LAYER_SCHEMA_INVALID = "Data schema check failed"
+    MAPCHEF_OUTPUT_MISSING = "MAPCHEF_OUTPUT_MISSING"
 
 
 class MapLayer:
@@ -298,6 +299,14 @@ class Operation:
                 )
             )
         )
+        self.layer_properties_path: Path = self.base_path.joinpath(
+            Path(
+                self._get_description_property(
+                    description_path=self.crash_move_folder_description_path,
+                    description_property="layer_properties",
+                )
+            )
+        )
 
         self.operation_id = self._get_description_property(
             description_path=self.event_description_path,
@@ -342,11 +351,49 @@ class Operation:
             return description_data[description_property]
 
     def get_map_product(self, map_product_id: str) -> MapProduct:
-        try:
-            map_product_path: Path = self.map_products_path.joinpath(map_product_id)
-            return MapProduct(base_path=map_product_path)
-        except MapProductInvalid:
-            raise OperationInvalid
+        """
+        Get a specified map product
+
+        :type map_product_id: str
+        :param map_product_id: map product ID
+        :rtype MapProduct
+        :return: Specified map product
+        """
+        map_product_path: Path = self.map_products_path.joinpath(map_product_id)
+        return MapProduct(base_path=map_product_path)
+
+    def get_layer_properties(self) -> List[MapLayer]:
+        """
+        Get layers used in MapChef automation
+
+        Intended where a required MapProduct does not exist but information about the layers it would contain is
+        necessary.
+
+        This information taken from the `layerProperties.json` file, included as part of the MapChef configuration, and
+        representing the layers used in the MA9999 (all layers) product. This is useful in situations where there
+        MapChef has not yet been run (new operations for example), meaning no products have been generated, meaning
+        there are no output files that can be processed.
+
+        ;:rtype List[MapLayer]
+        :return: layers used in MapChef automation
+        """
+        layers: List[MapLayer] = []
+        layer_definitions: List[Dict[str, Any]] = list()
+        with open(self.layer_properties_path, mode="r") as layers_properties_file:
+            layers_properties_data: Dict[
+                str,
+                List[Dict[str, Any]],
+            ] = json.load(fp=layers_properties_file)
+            layer_definitions = layers_properties_data["layerProperties"]
+
+        for layer in layer_definitions:
+            layers.append(
+                MapLayer(
+                    layer_id=layer["name"], error_messages=["MAPCHEF_OUTPUT_MISSING"]
+                )
+            )
+
+        return layers
 
     def export(self) -> Dict[str, str]:
         return {
@@ -374,6 +421,7 @@ class Evaluation:
     """
 
     error_mapping: Dict[MapChefError, EvaluationResult] = {
+        MapChefError.MAPCHEF_OUTPUT_MISSING: EvaluationResult.FAIL,
         MapChefError.LAYER_DATASOURCE_NONE: EvaluationResult.FAIL,
         MapChefError.LAYER_DATASOURCE_MULTIPLE: EvaluationResult.PASS_WITH_WARNINGS,
         MapChefError.LAYER_SCHEMA_INVALID: EvaluationResult.PASS_WITH_WARNINGS,
@@ -456,8 +504,8 @@ def parse_operation_layers(
     MapLayers are returned in a list per Operation so that an association between a layer and it's operation can be
     inferred elsewhere as this can't be set within objects currently [#16].
 
-    Operations that do not include the relevant map product are not included as keys in the returned dict. Operations
-    without this product should be considered invalid and filtered out using the `filter_valid_operations` method [#20].
+    Where an operation does not include the 'all layers' product (because MapChef has not yet been run for example),
+    the layers that this export will contain are used instead [#20]..
 
     :type config: Config
     :param config: application configuration
@@ -473,10 +521,8 @@ def parse_operation_layers(
             layers[operation.operation_id] = operation.get_map_product(
                 map_product_id=config["all_products_product_id"]
             ).layers
-        except OperationInvalid:
-            logging.warning(
-                f"Operation path '{operation.operation_id}' does not appear to be valid, ignoring operation."
-            )
+        except MapProductInvalid:
+            layers[operation.operation_id] = operation.get_layer_properties()
 
     return layers
 
@@ -485,13 +531,10 @@ def filter_valid_operations(
     operations: List[Operation], operation_layers: Dict[str, List[MapLayer]]
 ) -> List[Operation]:
     """
-    Filters a set of Operations to only return those with MapLayers from the 'all layers' MapProduct
+    Filters a set of Operations to those with a set of MapLayers
 
     Operations without MapLayers are considered invalid (because they can't be evaluated), however as operations aren't
     related to their layers [#16], it's not possible to determine valid operations by themselves.
-
-    This method checks to see if an operation has corresponding layers, those that don't are not returned. This is
-    considered a workaround for [#20] and isn't ideal.
 
     :type operations: List[Operation]
     :param operations: operations to filter
