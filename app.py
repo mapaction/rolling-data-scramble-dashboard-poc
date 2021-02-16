@@ -589,7 +589,7 @@ def process_evaluations(evaluations: List[Evaluation]) -> None:
 
 def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
     """
-    WIP - Aggregates and summarises evaluation results for use in exports
+    Aggregates and summarises evaluation results for use in exports
 
     Summarises evaluations by:
         1. totalling each result type, across all operations and layers
@@ -672,7 +672,7 @@ def prepare_export(
     operations: List[Operation],
 ) -> dict:
     """
-    WIP - Structures data results of evaluations for use in an export
+    Structures data results of evaluations for use in an export
 
     The intention of this method is to structure information in a way that makes it easy to use in reporting tools
     (i.e. exports), as a result there is lots f duplication and simplification of data types for example.
@@ -774,7 +774,7 @@ def prepare_export(
 
 def export_json(export_data: dict, export_path: Path) -> None:
     """
-    WIP - JSON exporter
+    JSON exporter
 
     Minimal example of an exporter.
 
@@ -789,7 +789,7 @@ def export_json(export_data: dict, export_path: Path) -> None:
 
 def export_google_sheets(config: Config, export_data: dict) -> None:
     """
-    WIP - Google Sheets exporter
+    Google Sheets exporter
 
     More complex example of an exporter using a Google Sheets spreadsheet.
 
