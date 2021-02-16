@@ -24,6 +24,7 @@ config["google_drive_operations_path"] = config["google_drive_base_path"].joinpa
 )
 
 config["rds_operations_cmf_paths"] = [
+    Path("2021-dom-001"),
     Path("2021-bgd-001"),
     Path("2021-moz-001"),
     Path("rolling-data-scramble-south-sudan/2020ssd001"),
