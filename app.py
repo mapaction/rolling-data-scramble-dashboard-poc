@@ -1,14 +1,17 @@
 import logging
 import sys
 import json
+import pandas as pd
 from datetime import datetime
 from enum import Enum, auto
 
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 
+from oauth2client import service_account
 from pycountry import countries
-
+from oauth2client.service_account import ServiceAccountCredentials
+from df2gspread import df2gspread as d2g
 from config import Config, config as app_config
 
 
@@ -478,7 +481,7 @@ def parse_operations(config: Config) -> List[Operation]:
             config["google_drive_operations_path"], operation_path
         )
         try:
-            operation_path.resolve(strict=True)
+            # operation_path.resolve(strict=True)
             operations.append(Operation(base_path=operation_path))
         except FileNotFoundError:
             logging.warning(
@@ -584,9 +587,92 @@ def process_evaluations(evaluations: List[Evaluation]) -> None:
         evaluation.evaluate()
 
 
-def generate_export(evaluations: List[Evaluation], operations: List[Operation]) -> dict:
+def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
     """
-    WIP - Structures data results of evaluations for use in an export
+    Aggregates and summarises evaluation results for use in exports
+
+    Summarises evaluations by:
+        1. totalling each result type, across all operations and layers
+        2. totalling each result type, by each operation
+        3. aggregating results for each operation and layer
+
+    For (3), the most significant (serve) result in each aggregation is used as the aggregated result (e.g. if the
+    results in an aggregation are [PASS, FAIL, PASS_WITH_WARNINGS] the aggregated result will be FAIL. See the
+    EvaluationResult enumeration for more information on the significance of each result type. The aggregations are
+    based on the MapAction Data Naming Conventions [1], specifically the Category clause [2].
+
+    [1] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10137499820/MapAction+Data+Naming+Convention
+    [2] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10294491254/MapAction+Data+Naming+Convention+Values#MapActionDataNamingConventionValues-category
+
+    :type evaluations: List[Evaluation]
+    :param evaluations: list of evaluations
+    :rtype summary_evaluations: Dict
+    :return summary_evaluations: summarised evaluations
+    """
+    _totals_by_result = {
+        EvaluationResult.NOT_EVALUATED.name: 0,
+        EvaluationResult.PASS.name: 0,
+        EvaluationResult.PASS_WITH_WARNINGS.name: 0,
+        EvaluationResult.FAIL.name: 0,
+        EvaluationResult.ERROR.name: 0,
+    }
+    _totals_by_result_by_operation = {}
+    _aggregated_layer_results_by_operation = {}
+
+    for evaluation in evaluations:
+        if evaluation.operation_id not in _totals_by_result_by_operation.keys():
+            _totals_by_result_by_operation[evaluation.operation_id]: Dict[str, int] = {
+                EvaluationResult.NOT_EVALUATED.name: 0,
+                EvaluationResult.PASS.name: 0,
+                EvaluationResult.PASS_WITH_WARNINGS.name: 0,
+                EvaluationResult.FAIL.name: 0,
+                EvaluationResult.ERROR.name: 0,
+            }
+        _totals_by_result[evaluation.result.name] += 1
+        _totals_by_result_by_operation[evaluation.operation_id][
+            evaluation.result.name
+        ] += 1
+
+        layer_category = evaluation.layer.layer_id.split(sep="-")[1]
+        if evaluation.operation_id not in _aggregated_layer_results_by_operation.keys():
+            _aggregated_layer_results_by_operation[evaluation.operation_id]: Dict[
+                str, str
+            ] = dict()
+        if (
+            layer_category
+            not in _aggregated_layer_results_by_operation[
+                evaluation.operation_id
+            ].keys()
+        ):
+            _aggregated_layer_results_by_operation[evaluation.operation_id][
+                layer_category
+            ] = EvaluationResult.NOT_EVALUATED.name
+        if (
+            evaluation.result.value
+            > EvaluationResult[
+                _aggregated_layer_results_by_operation[evaluation.operation_id][
+                    layer_category
+                ]
+            ].value
+        ):
+            _aggregated_layer_results_by_operation[evaluation.operation_id][
+                layer_category
+            ] = evaluation.result.name
+
+    return {
+        "totals_by_result": _totals_by_result,
+        "totals_by_result_by_operation": _totals_by_result_by_operation,
+        "aggregated_layer_results_by_operation": _aggregated_layer_results_by_operation,
+    }
+
+
+def prepare_export(
+    evaluations: List[Evaluation],
+    summary_evaluations: Dict[str, dict],
+    operations: List[Operation],
+) -> dict:
+    """
+    Structures data results of evaluations for use in an export
 
     The intention of this method is to structure information in a way that makes it easy to use in reporting tools
     (i.e. exports), as a result there is lots f duplication and simplification of data types for example.
@@ -595,6 +681,8 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
 
     :type evaluations: List[Evaluation]
     :param evaluations: list of evaluations
+    :type summary_evaluations: Dict
+    :param summary_evaluations: summarised evaluations
     :type operations: List[Operation]
     :param operations: list of operations
     :rtype dict
@@ -602,9 +690,13 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
     """
     export_version: int = 1
 
-    _operations = []
+    _operations: List[dict] = []
+    _operations_by_id: Dict[str, dict] = {}
+    _countries: Dict[str, str] = {}
     for operation in operations:
         _operations.append(operation.export())
+        _operations_by_id[operation.operation_id] = operation.export()
+        _countries[operation.affected_country.alpha_3] = operation.affected_country.name
 
     _results_by_operation: Dict[str, dict] = dict()
     _results_by_layer: Dict[str, dict] = dict()
@@ -644,41 +736,45 @@ def generate_export(evaluations: List[Evaluation], operations: List[Operation]) 
             }
         )
 
-    _summary_statistics: Dict[str, dict] = dict()
-    _summary_statistics["results"]: Dict[str, int] = {
-        EvaluationResult.NOT_EVALUATED.name: len(
-            _results_by_result[EvaluationResult.NOT_EVALUATED.name]
-        ),
-        EvaluationResult.PASS.name: len(_results_by_result[EvaluationResult.PASS.name]),
-        EvaluationResult.PASS_WITH_WARNINGS.name: len(
-            _results_by_result[EvaluationResult.PASS_WITH_WARNINGS.name]
-        ),
-        EvaluationResult.FAIL.name: len(_results_by_result[EvaluationResult.FAIL.name]),
-        EvaluationResult.ERROR.name: len(
-            _results_by_result[EvaluationResult.ERROR.name]
-        ),
-    }
-
     return {
         "meta": {
             "app_version": app_version,
             "export_version": export_version,
             "export_datetime": datetime.utcnow().isoformat(timespec="milliseconds"),
+            "display_labels": {
+                "result_types": {
+                    EvaluationResult.NOT_EVALUATED.name: "Not Evaluated",
+                    EvaluationResult.PASS.name: "Pass",
+                    EvaluationResult.PASS_WITH_WARNINGS.name: "Warning",
+                    EvaluationResult.FAIL.name: "Fail",
+                    EvaluationResult.ERROR.name: "Error",
+                },
+                "layer_aggregation_categories": {
+                    "admn": "Admin",
+                    "carto": "Cartographic",
+                    "elev": "Elevation",
+                    "phys": "Physical features",
+                    "stle": "Settlements",
+                    "tran": "Transport",
+                },
+            },
         },
         "data": {
             "operations": _operations,
+            "operations_by_id": _operations_by_id,
+            "countries": _countries,
             "results_by_operation": _results_by_operation,
             "results_by_layer": _results_by_layer,
             "results_by_result": _results_by_result,
             "ungrouped_results": _ungrouped_results,
-            "summary_statistics": _summary_statistics,
+            "summary_statistics": summary_evaluations,
         },
     }
 
 
 def export_json(export_data: dict, export_path: Path) -> None:
     """
-    WIP - JSON exporter
+    JSON exporter
 
     Minimal example of an exporter.
 
@@ -691,11 +787,101 @@ def export_json(export_data: dict, export_path: Path) -> None:
         json.dump(obj=export_data, fp=export_file, indent=4, sort_keys=True)
 
 
+def export_google_sheets(config: Config, export_data: dict) -> None:
+    """
+    Google Sheets exporter
+
+    More complex example of an exporter using a Google Sheets spreadsheet.
+
+    Spreadsheet link: https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/
+
+    Three sheets are created:
+        1. a summary of results from the current run (layers per operation/country, aggregated by category)
+        2. detailed results from the current run (layers per operation/country)
+        3. detailed results from the last run of each day (adds one sheet every new day this app is run)
+
+    :type config: Config
+    :param config: application configuration
+    :type export_data: dict
+    :param export_data: data generated by `generate_export()`
+    """
+    summary_data: dict = {}
+    for operation, aggregated_country_results in export_data["data"][
+        "summary_statistics"
+    ]["aggregated_layer_results_by_operation"].items():
+        summary_data[
+            export_data["data"]["operations_by_id"][operation]["affected_country_name"]
+        ] = aggregated_country_results.values()
+    summary_dataframe: pd.DataFrame = pd.DataFrame.from_dict(
+        summary_data,
+        orient="index",
+        columns=export_data["meta"]["display_labels"][
+            "layer_aggregation_categories"
+        ].keys(),
+    )
+    summary_dataframe.rename(
+        export_data["meta"]["display_labels"]["layer_aggregation_categories"],
+        axis="columns",
+        inplace=True,
+    )
+    summary_dataframe.replace(
+        to_replace=export_data["meta"]["display_labels"]["result_types"], inplace=True
+    )
+    summary_dataframe = summary_dataframe.transpose()
+
+    data: dict = {}
+    for operation, country_results in export_data["data"][
+        "results_by_operation"
+    ].items():
+        data[
+            export_data["data"]["operations_by_id"][operation]["affected_country_name"]
+        ] = country_results.values()
+    detail_dataframe: pd.DataFrame = pd.DataFrame.from_dict(
+        data, orient="index", columns=export_data["data"]["results_by_layer"].keys()
+    )
+    detail_dataframe.replace(
+        to_replace=export_data["meta"]["display_labels"]["result_types"], inplace=True
+    )
+    detail_dataframe = detail_dataframe.transpose()
+
+    google_credentials: service_account = (
+        ServiceAccountCredentials.from_json_keyfile_name(
+            filename=config["google_service_credential_path"],
+            scopes=config["google_service_credential_scopes"],
+        )
+    )
+
+    d2g.upload(
+        df=summary_dataframe,
+        gfile=config["google_sheets_key"],
+        wks_name=config["google_sheets_summary_sheet_name"],
+        credentials=google_credentials,
+        row_names=True,
+        col_names=True,
+    )
+    d2g.upload(
+        df=detail_dataframe,
+        gfile=config["google_sheets_key"],
+        wks_name=config["google_sheets_detail_sheet_name"],
+        credentials=google_credentials,
+        row_names=True,
+        col_names=True,
+    )
+    d2g.upload(
+        df=detail_dataframe.transpose(),
+        gfile=config["google_sheets_key"],
+        wks_name=f"output-{datetime.utcnow().date().isoformat()}",
+        credentials=google_credentials,
+        row_names=True,
+        col_names=True,
+    )
+
+
 def run() -> None:
     """
-    Simple method to call functions and configure the application
+    Simple method to chain functions together and configure the application
     """
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
     operations = parse_operations(config=app_config)
     operation_layers = parse_operation_layers(config=app_config, operations=operations)
@@ -704,8 +890,14 @@ def run() -> None:
     )
     evaluations = generate_evaluations(operation_layers=operation_layers)
     process_evaluations(evaluations=evaluations)
-    export_data = generate_export(evaluations=evaluations, operations=operations)
+    summary_evaluations = summarise_evaluations(evaluations=evaluations)
+    export_data = prepare_export(
+        evaluations=evaluations,
+        summary_evaluations=summary_evaluations,
+        operations=operations,
+    )
     export_json(export_data=export_data, export_path=app_config["export_path"])
+    export_google_sheets(config=app_config, export_data=export_data)
 
 
 if __name__ == "__main__":
