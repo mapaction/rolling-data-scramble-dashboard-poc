@@ -868,7 +868,7 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
         col_names=True,
     )
     d2g.upload(
-        df=detail_dataframe.transpose(),
+        df=detail_dataframe,
         gfile=config["google_sheets_key"],
         wks_name=f"output-{datetime.utcnow().date().isoformat()}",
         credentials=google_credentials,
