@@ -85,10 +85,21 @@ Scramble, and in wider automation projects.
 #### Application configuration
 
 Configuration options for this application are defined in the `config.py` module. This uses a typed dictionary to
-define the options available. Descriptions of what each config option does are provided in this dictionary description.
+define the options available. Descriptions of what each config option does, and default values used for each, are 
+provided in this dictionary's description.
 
-**Note:** These options do not change on a per-instance/environment basis, and with the exception of
-`rds_operations_cmf_paths`, are not designed to be modified (i.e. they are constants).
+These default values can optionally be overridden using environment variables in the form: 
+`APP_RDS_DASHBOARD_{CONFIG-OPTION}`.
+
+**Note:** The `rds_operations_cmf_paths` config option cannot be overridden this way.
+
+For example to override the `google_drive_base_path` config option to `/Foo`, set an environment variable:
+
+```
+APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH=/foo
+```
+
+See the notes in the `config.py` module for valid values for configuration options.
 
 ### Exporters
 
