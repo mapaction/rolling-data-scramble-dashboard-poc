@@ -13,7 +13,7 @@ class Config(TypedDict):
 
     Description: Absolute path to the root of the Google Drive for Desktop (Google File Stream) drive.
 
-    Value: Hardcoded to the location used on macOS.
+    Value: Hardcoded to the default location used on Windows or macOS.
 
     == google_drive_operations_path ==
 
@@ -74,6 +74,7 @@ class Config(TypedDict):
     Value: Conventional value
 
     """
+
     google_drive_base_path: Path
     google_drive_operations_path: Path
     rds_operations_cmf_paths: List[Path]
@@ -86,9 +87,29 @@ class Config(TypedDict):
     google_sheets_detail_sheet_name: str
 
 
+def google_drive_base_path() -> Path:
+    """
+    Determine the root of the Google Drive based on the OS platform
+
+    Supports Windows and macOS (which are the only platforms supported currently)
+
+    :return: path to the root of the Google Drive
+    """
+    google_drive_base_path_windows = Path("G:")
+    google_drive_base_path_macos = Path("/Volumes/GoogleDrive")
+
+    if google_drive_base_path_windows.exists():
+        return google_drive_base_path_windows
+
+    if google_drive_base_path_macos.exists():
+        return google_drive_base_path_macos
+
+    raise FileNotFoundError
+
+
 config: Config = dict()
 
-config["google_drive_base_path"] = Path("/Volumes/GoogleDrive")
+config["google_drive_base_path"] = google_drive_base_path()
 
 config["google_drive_operations_path"] = config["google_drive_base_path"].joinpath(
     "Shared drives/country-responses"
