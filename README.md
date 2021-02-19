@@ -168,6 +168,14 @@ Ensure the `poetry.lock` file is included in the project repository.
 
 Python code should follow PEP-8 and use the [Black](https://black.readthedocs.io) code formatter.
 
+## Release procedure
+
+For all releases:
+
+1. create a release branch
+2. close release in `CHANGELOG.md`
+3. push changes, merge the release branch into `main` and tag with version
+
 ## Feedback
 
 Feedback of any kind is welcome.
