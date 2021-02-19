@@ -1,3 +1,5 @@
+import os
+
 from pathlib import Path
 from typing import TypedDict, List
 
@@ -6,72 +8,91 @@ class Config(TypedDict):
     """
     Application configuration options
 
-    These options do not change on a per-instance/environment basis, and with the exception of
-    `rds_operations_cmf_paths`, are not designed to be modified (i.e. they are constants).
+    All options have a default value which can optionally be overridden using environment variables.
 
     == google_drive_base_path ==
 
     Description: Absolute path to the root of the Google Drive for Desktop (Google File Stream) drive.
 
-    Value: Hardcoded to the default location used on Windows or macOS.
+    Default value: Hardcoded to the default location used on Windows or macOS.
+
+    Allowed value: Valid OS file path.
 
     == google_drive_operations_path ==
 
     Description: Relative path to the directory containing `rds_operations_cmf_paths`, relative to
                 `google_drive_base_path`.
 
-    Value: Hardcoded to conventional location.
+    Default value: Hardcoded to conventional location.
+
+    Allowed value: Valid OS file path.
 
     == rds_operations_cmf_paths ==
 
     Description: Relative paths to Crash Move Folders for each operation to be reported on by this application,
                  relative to `google_drive_operations_path`.
 
-    Value: Varies based on current reporting needs.
+    Default value: Varies based on current reporting needs.
+
+    Allowed value: List of valid OS file paths.
 
     == all_products_product_id ==
 
     Description: Name of the map product who's layers should be evaluated for this dashboard.
 
-    Value: MapChef Pseudo 'all layers' product.
+    Default value: MapChef Pseudo 'all layers' product.
+
+    Allowed value: Valid OS file path representing a valid map product.
 
     == export_path ==
 
     Description: Path to the exported file produced by the JSON exporter, relative to `app.py`.
 
-    Value: conventional/arbitrary value.
+    Default value: Conventional/arbitrary value.
+
+     Allowed value: Valid OS file path (will be overwritten on each run).
 
     == google_service_credential_path ==
 
     Description: Path to the Google apps/auth credential file for the Google Sheets exporter, created when registering
                  a service principle (see README), relative to `app.py`.
 
-    Value: conventional/arbitrary value.
+    Default value: Conventional/arbitrary value.
+
+    Allowed value: Valid OS file to a Google service credential file.
 
     == google_service_credential_scopes ==
 
     Description: Google auth OAuth scopes used by the Google Sheets exporter, these scopes be granted to the service
-                 principle set by `google_service_credential_path`.
+                 principle set by `google_service_credential_path`. Expressed as a comma separated list (no spaces).
 
-    Value: Required scopes for Google Sheets exporter
+    Default value: Required scopes for Google Sheets exporter
+
+    Allowed value: Valid
 
     == google_sheets_key ==
 
     Description: Identifier of the spreadsheet used by the Google Sheets exporter.
 
-    Value: Identifier to relevant spreadsheet
+    Default value: Identifier to relevant spreadsheet
+
+    Allowed value: Valid Google Sheets document ID
 
     == google_sheets_summary_sheet_name ==
 
     Description: Name for the summary/aggregated results sheet in the spreadsheet used by the Google Sheets exporter.
 
-    Value: Conventional value
+    Default value: Conventional value
+
+    Allowed value: String
 
     == google_sheets_detail_sheet_name ==
 
     Description: Name for the detailed results sheet in the spreadsheet used by the Google Sheets exporter.
 
-    Value: Conventional value
+    Default value: Conventional value
+
+    Allowed value: String
 
     """
 
@@ -109,10 +130,15 @@ def google_drive_base_path() -> Path:
 
 config: Config = dict()
 
-config["google_drive_base_path"] = google_drive_base_path()
+config["google_drive_base_path"] = os.getenv(
+    "APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH", default=google_drive_base_path()
+)
 
 config["google_drive_operations_path"] = config["google_drive_base_path"].joinpath(
-    "Shared drives/country-responses"
+    os.getenv(
+        "APP_RDS_DASHBOARD_GOOGLE_DRIVE_OPERATIONS_PATH",
+        default="Shared drives/country-responses",
+    )
 )
 
 config["rds_operations_cmf_paths"] = [
@@ -122,12 +148,43 @@ config["rds_operations_cmf_paths"] = [
     Path("rolling-data-scramble-south-sudan/2020ssd001"),
 ]
 
-config["all_products_product_id"] = "MA9999"
+config["all_products_product_id"] = os.getenv(
+    "APP_RDS_DASHBOARD_ALL_PRODUCTS_ID",
+    default="MA9999",
+)
 
-config["export_path"] = Path("export.json")
+config["export_path"] = Path(
+    os.getenv(
+        "APP_RDS_DASHBOARD_EXPORT_PATH",
+        default="export.json",
+    )
+)
 
-config["google_service_credential_path"] = Path("google-application-credentials.json")
-config["google_service_credential_scopes"] = ["https://spreadsheets.google.com/feeds"]
-config["google_sheets_key"] = "1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8"
-config["google_sheets_summary_sheet_name"] = "Summary"
-config["google_sheets_detail_sheet_name"] = "All layers"
+config["google_service_credential_path"] = Path(
+    os.getenv(
+        "APP_RDS_DASHBOARD_GOOGLE_SERVICE_CREDENTIAL_PATH",
+        default="google-application-credentials.json",
+    )
+)
+
+config["google_service_credential_scopes"] = str(
+    os.getenv(
+        "APP_RDS_DASHBOARD_GOOGLE_SERVICE_CREDENTIAL_SCOPES",
+        default="https://spreadsheets.google.com/feeds",
+    )
+).split(",")
+
+config["google_sheets_key"] = os.getenv(
+    "APP_RDS_DASHBOARD_GOOGLE_SHEETS_KEY",
+    default="1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8",
+)
+
+config["google_sheets_summary_sheet_name"] = os.getenv(
+    "APP_RDS_DASHBOARD_SUMMARY_SHEET_NAME",
+    default="Summary",
+)
+
+config["google_sheets_detail_sheet_name"] = os.getenv(
+    "APP_RDS_DASHBOARD_DETAIL_SHEET_NAME",
+    default="All layers",
+)
