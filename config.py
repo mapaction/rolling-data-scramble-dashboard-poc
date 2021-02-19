@@ -1,7 +1,9 @@
 import os
 
 from pathlib import Path
-from typing import TypedDict, List
+from typing import List
+
+from typing_extensions import TypedDict
 
 
 class Config(TypedDict):
