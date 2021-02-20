@@ -187,8 +187,11 @@ Python code should follow PEP-8 and use the [Black](https://black.readthedocs.io
 For all releases:
 
 1. create a release branch
-2. close release in `CHANGELOG.md`
-3. push changes, merge the release branch into `main` and tag with version
+2. bump the project version using [`poetry version`](https://python-poetry.org/docs/cli/#version)
+3. update `app_version` variable in `app.py` (needed until project is distributed as a package)
+4. close release in `CHANGELOG.md`
+5. push changes and merge the release branch into `main`
+6. create a tag and release through GitHub (tags should match the package version)
 
 ## Feedback
 
