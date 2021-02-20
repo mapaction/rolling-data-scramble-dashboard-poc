@@ -16,7 +16,7 @@ from config import Config, config as app_config
 
 
 # @todo: read from future package / pyproject.toml
-app_version = "0.1.0"
+app_version = "0.2.0"
 
 
 class OperationInvalid(Exception):
