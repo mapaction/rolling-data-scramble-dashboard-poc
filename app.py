@@ -1,6 +1,8 @@
 import logging
 import sys
 import json
+from collections import OrderedDict
+
 import pandas as pd
 from datetime import datetime
 from enum import Enum, auto
@@ -800,6 +802,11 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
         2. detailed results from the current run (layers per operation/country)
         3. detailed results from the last run of each day (adds one sheet every new day this app is run)
 
+    Each dict of summary or detail results needs to be ordered so that values in each row match the right column header.
+
+    Normally this would be fine as items are used as key:value pairs, but here they're split and we need to rely on
+    element order to set the right position.
+
     :type config: Config
     :param config: application configuration
     :type export_data: dict
@@ -809,15 +816,18 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
     for operation, aggregated_country_results in export_data["data"][
         "summary_statistics"
     ]["aggregated_layer_results_by_operation"].items():
+        aggregated_country_results = OrderedDict(
+            sorted(aggregated_country_results.items())
+        )
         summary_data[
             export_data["data"]["operations_by_id"][operation]["affected_country_name"]
         ] = aggregated_country_results.values()
     summary_dataframe: pd.DataFrame = pd.DataFrame.from_dict(
         summary_data,
         orient="index",
-        columns=export_data["meta"]["display_labels"][
-            "layer_aggregation_categories"
-        ].keys(),
+        columns=sorted(
+            export_data["meta"]["display_labels"]["layer_aggregation_categories"].keys()
+        ),
     )
     summary_dataframe.rename(
         export_data["meta"]["display_labels"]["layer_aggregation_categories"],
@@ -833,11 +843,14 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
     for operation, country_results in export_data["data"][
         "results_by_operation"
     ].items():
+        country_results = OrderedDict(sorted(country_results.items()))
         data[
             export_data["data"]["operations_by_id"][operation]["affected_country_name"]
         ] = country_results.values()
     detail_dataframe: pd.DataFrame = pd.DataFrame.from_dict(
-        data, orient="index", columns=export_data["data"]["results_by_layer"].keys()
+        data,
+        orient="index",
+        columns=sorted(export_data["data"]["results_by_layer"].keys()),
     )
     detail_dataframe.replace(
         to_replace=export_data["meta"]["display_labels"]["result_types"], inplace=True
