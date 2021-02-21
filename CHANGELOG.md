@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+* [#47] Inconsistent element ordering for dictionaries in Google Sheets exporter
+
 ## [0.2.0] - 2021-02-20
 
 ### Added
