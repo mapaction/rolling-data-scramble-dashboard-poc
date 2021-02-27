@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rds-dashboard"
+name = "mapaction-rds-dashboard"
 version = "0.2.0"
 description = "Proof of concept dashboard for the status of MapAction Rolling Data Scrambles"
 authors = [

@@ -14,11 +14,9 @@ from oauth2client import service_account
 from pycountry import countries
 from oauth2client.service_account import ServiceAccountCredentials
 from df2gspread import df2gspread as d2g
-from config import Config, config as app_config
 
-
-# @todo: read from future package / pyproject.toml
-app_version = "0.2.0"
+from mapaction_rds_dashboard import __version__
+from mapaction_rds_dashboard.config import Config, config as app_config
 
 
 class OperationInvalid(Exception):
@@ -740,7 +738,7 @@ def prepare_export(
 
     return {
         "meta": {
-            "app_version": app_version,
+            "app_version": __version__,
             "export_version": export_version,
             "export_datetime": datetime.utcnow().isoformat(timespec="milliseconds"),
             "display_labels": {
@@ -911,7 +909,3 @@ def run() -> None:
     )
     export_json(export_data=export_data, export_path=app_config["export_path"])
     export_google_sheets(config=app_config, export_data=export_data)
-
-
-if __name__ == "__main__":
-    run()

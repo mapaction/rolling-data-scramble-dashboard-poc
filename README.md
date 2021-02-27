@@ -24,8 +24,7 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 
 ```
 $ cd rolling-data-scramble-dashboard-poc/
-$ poetry shell
-$ python3 app.py
+$ poetry run python entrypoint.py
 ```
 
 This will:
@@ -46,7 +45,7 @@ installed with suitable permissions to access shared drives.
 You will need to generate a
 [Google OAuth credential](https://df2gspread.readthedocs.io/en/latest/overview.html#access-credentials) with
 suitable permissions to update the Google Sheets export. Save this file as `./google-application-credentials.json`
-relative to `app.py`.
+relative to `entrypoint.py`.
 
 ```
 $ brew install python
@@ -69,10 +68,10 @@ and have a problem please contact @dsoares & @ffennell, or @asmith in the [#topi
 To allow future integration into other parts of the Rolling Data Scramble and wider automation projects, this
 project is written in Python.
 
-The application for this project is written in Python as a set of classes and functions contained in a single `app.py`
-module.
+The application for this project is written in Python as a set of classes and functions contained in a 
+[`mapaction_rds_dashboard`](src/mapaction_rds_dashboard) package.
 
-A `run()` method acts as an entry point to call and pass data between other methods to perform the steps needed to:
+A `run()` method calls and passes data between the steps needed to:
 
 1. for a set of operations, read their details from their Crash Move Folders
 2. specifically, read the MapChef output about the layers in the 'MA9999' pseudo-product
@@ -81,6 +80,8 @@ A `run()` method acts as an entry point to call and pass data between other meth
 
 This sequence of method calls is designed to allow each step to be run as part of a workflow for the Rolling Data
 Scramble, and in wider automation projects.
+
+The `entrypoint.py` script is used to run this method.
 
 #### Application configuration
 
@@ -188,7 +189,8 @@ For all releases:
 
 1. create a release branch
 2. bump the project version using [`poetry version`](https://python-poetry.org/docs/cli/#version)
-3. update `app_version` variable in `app.py` (needed until project is distributed as a package)
+3. update `__version__` variable in [`__init__.py`](src/mapaction_rds_dashboard/__init__.py) 
+   (needed until project is distributed as a package)
 4. close release in `CHANGELOG.md`
 5. push changes and merge the release branch into `main`
 6. create a tag and release through GitHub (tags should match the package version)
