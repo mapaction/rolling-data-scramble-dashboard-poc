@@ -24,8 +24,7 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 
 ```
 $ cd rolling-data-scramble-dashboard-poc/
-$ poetry shell
-$ python3 app.py
+$ poetry run python entrypoint.py
 ```
 
 This will:
@@ -46,7 +45,7 @@ installed with suitable permissions to access shared drives.
 You will need to generate a
 [Google OAuth credential](https://df2gspread.readthedocs.io/en/latest/overview.html#access-credentials) with
 suitable permissions to update the Google Sheets export. Save this file as `./google-application-credentials.json`
-relative to `app.py`.
+relative to `entrypoint.py`.
 
 ```
 $ brew install python
@@ -81,6 +80,8 @@ A `run()` method calls and passes data between the steps needed to:
 
 This sequence of method calls is designed to allow each step to be run as part of a workflow for the Rolling Data
 Scramble, and in wider automation projects.
+
+The `entrypoint.py` script is used to run this method.
 
 #### Application configuration
 
