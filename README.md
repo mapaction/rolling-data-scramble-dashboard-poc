@@ -69,10 +69,10 @@ and have a problem please contact @dsoares & @ffennell, or @asmith in the [#topi
 To allow future integration into other parts of the Rolling Data Scramble and wider automation projects, this
 project is written in Python.
 
-The application for this project is written in Python as a set of classes and functions contained in a single `app.py`
-module.
+The application for this project is written in Python as a set of classes and functions contained in a 
+[`mapaction_rds_dashboard`](src/mapaction_rds_dashboard) package.
 
-A `run()` method acts as an entry point to call and pass data between other methods to perform the steps needed to:
+A `run()` method calls and passes data between the steps needed to:
 
 1. for a set of operations, read their details from their Crash Move Folders
 2. specifically, read the MapChef output about the layers in the 'MA9999' pseudo-product
@@ -188,7 +188,8 @@ For all releases:
 
 1. create a release branch
 2. bump the project version using [`poetry version`](https://python-poetry.org/docs/cli/#version)
-3. update `app_version` variable in `app.py` (needed until project is distributed as a package)
+3. update `__version__` variable in [`__init__.py`](src/mapaction_rds_dashboard/__init__.py) 
+   (needed until project is distributed as a package)
 4. close release in `CHANGELOG.md`
 5. push changes and merge the release branch into `main`
 6. create a tag and release through GitHub (tags should match the package version)

@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed [BREAKING!]
+
+* [#50] Renamed `app_version` to `__version__` to follow convention and moved to base of new package
+
 ### Fixed
 
 * [#47] Inconsistent element ordering for dictionaries in Google Sheets exporter
+
+### Changed
+
+* [#50] Switching to `src/` package layout to define a project package
 
 ## [0.2.0] - 2021-02-20
 
