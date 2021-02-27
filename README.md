@@ -24,7 +24,7 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 
 ```
 $ cd rolling-data-scramble-dashboard-poc/
-$ poetry run python entrypoint.py
+$ poetry run update-dashboard
 ```
 
 This will:
@@ -81,7 +81,7 @@ A `run()` method calls and passes data between the steps needed to:
 This sequence of method calls is designed to allow each step to be run as part of a workflow for the Rolling Data
 Scramble, and in wider automation projects.
 
-The `entrypoint.py` script is used to run this method.
+The `update-dashboard` Poetry script is used to run this method.
 
 #### Application configuration
 
