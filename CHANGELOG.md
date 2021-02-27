@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * [#50] Renamed `app_version` to `__version__` to follow convention and moved to base of new package
 * [#51] `update-dashboard` Poetry script, replacing `app.py`/entrypoint.py` scripts
 
+### Added
+
+* [#50] Testing and coverage support
+
 ### Fixed
 
 * [#47] Inconsistent element ordering for dictionaries in Google Sheets exporter
