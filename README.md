@@ -183,6 +183,26 @@ Ensure the `poetry.lock` file is included in the project repository.
 
 Python code should follow PEP-8 and use the [Black](https://black.readthedocs.io) code formatter.
 
+### Tests
+
+All code should be covered by appropriate tests (unit, integration, etc.). Tests for this project are contained in the
+[`tests`](/tests) directory and ran using [Pytest](https://docs.pytest.org/en/stable/):
+
+```shell
+$ poetry run pytest
+```
+
+#### Test coverage
+
+Test coverage can be checked using [Coverage](https://coverage.readthedocs.io/):
+
+```shell
+$ poetry run pytest --cov
+```
+
+**Note:** Test coverage cannot measure the quality, or meaningfulness of any tests written, however it can identify 
+code without any tests.
+
 ## Release procedure
 
 For all releases:
