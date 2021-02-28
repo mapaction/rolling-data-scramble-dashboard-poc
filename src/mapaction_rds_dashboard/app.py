@@ -333,8 +333,6 @@ class Operation:
         description_path: Path, description_property: str
     ) -> str:
         """
-
-        @todo: error handling (invalid JSON decode, file does not exist, etc.) [#14]
         Get a property from the `event_description.json` or `cmf_description.json` configuration file.
 
         :type description_path: Path
