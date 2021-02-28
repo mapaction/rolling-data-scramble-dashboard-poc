@@ -1,7 +1,7 @@
 name: Tests
 on: push
 jobs:
-  🐧 Linux:
+  Linux:
     runs-on: ubuntu-latest
     steps:
       -
@@ -35,7 +35,7 @@ jobs:
       -
         name: Run TypeGuard type checks
         run: poetry run pytest --typeguard-packages mapaction_rds_dashboard
-  🏁 Windows:
+  Windows:
     runs-on: windows-latest
     steps:
       -
