@@ -56,8 +56,6 @@ jobs:
         with:
           python-version: 3.7
           architecture: x64
-      - run: pwd
-      - run: ls
       -
         name: Test installing project package
-        run: python -m pip install dist/*.whl
+        run: python -m pip install *.whl
