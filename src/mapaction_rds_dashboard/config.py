@@ -7,7 +7,7 @@ from typing_extensions import TypedDict
 
 class Config(TypedDict, total=False):
     """
-    Application configuration options
+    Application configuration options.
 
     All options have a default value which can optionally be overridden using environment variables.
 
@@ -111,10 +111,11 @@ class Config(TypedDict, total=False):
 
 def google_drive_base_path() -> Path:
     """
-    Determine the root of the Google Drive based on the OS platform
+    Determine the root of the Google Drive based on the OS platform.
 
     Supports Windows and macOS (which are the only platforms supported currently)
 
+    :raises FileNotFoundError: path to the root of the Google Drive does not exist
     :return: path to the root of the Google Drive
     """
     google_drive_base_path_windows = Path("G:")

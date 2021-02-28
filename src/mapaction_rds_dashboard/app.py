@@ -19,7 +19,7 @@ from mapaction_rds_dashboard.config import Config, config as app_config
 
 class OperationInvalid(Exception):
     """
-    Indicates an operation is invalid (for any reason)
+    Indicates an operation is invalid (for any reason).
 
     Currently this is a generic catch-all class, in future sub-classes could be added for specific circumstances.
     """
@@ -29,7 +29,7 @@ class OperationInvalid(Exception):
 
 class MapProductInvalid(Exception):
     """
-    Indicates a map product is invalid (for any reason)
+    Indicates a map product is invalid (for any reason).
 
     Currently this is a generic catch-all class, in future sub-classes could be added for specific circumstances.
     """
@@ -39,7 +39,7 @@ class MapProductInvalid(Exception):
 
 class EvaluationResult(Enum):
     """
-    An enumeration of possible states for the result for an Evaluation
+    An enumeration of possible states for the result for an Evaluation.
 
     Includes 'resolved' states, where an Evaluation successfully took place (e.g. pass, fail, etc.) and 'unresolved'
     states, where an Evaluation could not, or has not, taken place (e.g. because it hasn't happened yet, or an error
@@ -69,7 +69,7 @@ class EvaluationResult(Enum):
 
 class MapChefError(Enum):
     """
-    An enumeration of possible error conditions reported by MapChef
+    An enumeration of possible error conditions reported by MapChef.
 
     Errors are matched against the human readable error MapChef includes in layer output files.
 
@@ -84,7 +84,7 @@ class MapChefError(Enum):
 
 class MapLayer:
     """
-    Represents a layer with a Map Product
+    Represents a layer with a Map Product.
 
     For the purposes of the Rolling Data Scramble dashboard, layers represent the units that are evaluated.
 
@@ -96,7 +96,7 @@ class MapLayer:
 
     def __init__(self, layer_id: str, error_messages: List[str]) -> None:
         """
-        Loads layer properties parses MapChef error messages
+        Load layer properties and parse MapChef error messages.
 
         :type layer_id: str
         :param layer_id: layer ID
@@ -115,7 +115,7 @@ class MapLayer:
     @staticmethod
     def _parse_error_messages(error_messages: List[str]) -> List[MapChefError]:
         """
-        Matches MapChef Errors against the MapChefErrors enumeration
+        Match MapChef Errors against the MapChefErrors enumeration.
 
         For ease of reference when analysing and reporting errors.
 
@@ -134,7 +134,7 @@ class MapLayer:
 
 class MapProduct:
     """
-    Represents a product within a Map
+    Represents a product within a Map.
 
     For the purposes of the Rolling Data Scramble dashboard, products represent the whole that is being evaluated. I.e.
     represents, and defines, the columns in the dashboard.
@@ -148,11 +148,13 @@ class MapProduct:
 
     def __init__(self, base_path: Path) -> None:
         """
-        Loads product, and product iteration, properties from MapChef output files
+        Load product, and product iteration, properties from MapChef output files.
 
         Limitations:
         * only the most recent product iteration is considered
         * only the primary data frame in a product iteration is considered
+
+        :raises MapProductInvalid: If the path to map product does not existing it is considered invalid.
 
         :type base_path: Path
         :param base_path: path to the root of the folder representing this product within a Crash Move Folder
@@ -183,7 +185,7 @@ class MapProduct:
 
     def _get_latest_map_chef_description_path(self) -> Optional[Path]:
         """
-        Determines the MapChef description/output file for the latest product iteration
+        Determine MapChef description/output file for the latest product iteration.
 
         Thankfully, because the naming convention used for these files is consistent we can rely on Python's built in
         `max()` method to determine the 'highest' value for a list of file names.
@@ -204,9 +206,7 @@ class MapProduct:
 
     def _get_map_chef_description_property(self, description_property: str) -> str:
         """
-        Gets a property from MapChef description/output file
-
-        @todo: error handling (invalid JSON decode, file does not exist, etc.) [#14]
+        Get a property from MapChef description/output file.
 
         :type description_property: str
         :param description_property: key of the property to get
@@ -219,7 +219,7 @@ class MapProduct:
 
     def _get_map_chef_primary_layers(self) -> List[MapLayer]:
         """
-        Gets layer information from the primary map frame in the MapChef description/output file
+        Get layer information from the primary map frame in the MapChef description/output file.
 
         Note: This method is not ideal in terms of duplicating code for reading the description file contents. See
         https://github.com/mapaction/rolling-data-scramble-dashboard-poc/issues/13#issuecomment-776567511.
@@ -250,7 +250,7 @@ class MapProduct:
 
 class Operation:
     """
-    Represents an operational response
+    Represents an operational response.
 
     In abstract terms, this class represents an activation for a given country (an operation).
     In concrete terms, this class represents properties of a Crash Move Folder (CMF) for a given activation.
@@ -266,12 +266,13 @@ class Operation:
 
     def __init__(self, base_path: Path) -> None:
         """
-        Loads operation properties from description files and performs minimal validation
+        Load operation properties from description files and perform minimal validation.
 
-        Validation is currently limited to whether the operation id is not an empty string. This is intended to prevent
+        Validation is currently limited to whether the operation ID is not an empty string. This is intended to prevent
         an unconfigured CMF being processed, as this will lead to errors later on.
 
         @todo: find a better of determining whether a CMF has not been configured [#9]
+        :raises OperationInvalid: If the operation ID is an empty string, the operation is considered invalid.
 
         :type base_path: Path
         :param base_path: path to the root of the Crash Move Folder representing the operation
@@ -332,9 +333,9 @@ class Operation:
         description_path: Path, description_property: str
     ) -> str:
         """
-        Gets a property from the `event_description.json` or `cmf_description.json` configuration file
 
         @todo: error handling (invalid JSON decode, file does not exist, etc.) [#14]
+        Get a property from the `event_description.json` or `cmf_description.json` configuration file.
 
         :type description_path: Path
         :param description_path: path to the event or CMF description file
@@ -349,7 +350,7 @@ class Operation:
 
     def get_map_product(self, map_product_id: str) -> MapProduct:
         """
-        Get a specified map product
+        Get a specified map product.
 
         :type map_product_id: str
         :param map_product_id: map product ID
@@ -361,7 +362,7 @@ class Operation:
 
     def get_layer_properties(self) -> List[MapLayer]:
         """
-        Get layers used in MapChef automation
+        Get layers used in MapChef automation.
 
         Intended where a required MapProduct does not exist but information about the layers it would contain is
         necessary.
@@ -391,6 +392,12 @@ class Operation:
         return layers
 
     def export(self) -> Dict[str, str]:
+        """
+        Return information about an Operation for use in exports.
+
+        :return: Operation information
+        :rtype Dict[str, str]
+        """
         return {
             "affected_country_iso3": self.affected_country.alpha_3,
             "affected_country_name": self.affected_country.name,
@@ -401,7 +408,7 @@ class Operation:
 
 class Evaluation:
     """
-    Represents the status of a layer for a operation
+    Represents the status of a layer for a operation.
 
     I.e. the cells in the dashboard.
 
@@ -424,6 +431,8 @@ class Evaluation:
 
     def __init__(self, operation_id: str, layer: MapLayer) -> None:
         """
+        Set Operation and Map Layer properties.
+
         :type operation_id: str
         :param operation_id: operation ID
         :type layer: MapLayer
@@ -439,7 +448,7 @@ class Evaluation:
 
     def evaluate(self) -> None:
         """
-        Evaluates a layer by checking whether it has any errors
+        Evaluate a layer by checking whether it has any errors.
 
         If not, the layer is considered to pass.
 
@@ -458,7 +467,7 @@ class Evaluation:
 
 def parse_operations(config: Config) -> List[Operation]:
     """
-    Processes Operations for a set of operation IDs
+    Process Operations for a set of operation IDs.
 
     Minimal validation of each operation is performed, namely:
      - does the path to the operation/CMF exist?
@@ -494,7 +503,7 @@ def parse_operation_layers(
     config: Config, operations: List[Operation]
 ) -> Dict[str, List[MapLayer]]:
     """
-    Processes MapLayers from the 'all layers' MapProduct, for and grouped by, a set of Operations
+    Process MapLayers from the 'all layers' MapProduct, for and grouped by, a set of Operations.
 
     MapLayers are returned in a list per Operation so that an association between a layer and it's operation can be
     inferred elsewhere as this can't be set within objects currently [#16].
@@ -526,7 +535,7 @@ def filter_valid_operations(
     operations: List[Operation], operation_layers: Dict[str, List[MapLayer]]
 ) -> List[Operation]:
     """
-    Filters a set of Operations to those with a set of MapLayers
+    Filter a set of Operations to those with a set of MapLayers.
 
     Operations without MapLayers are considered invalid (because they can't be evaluated), however as operations aren't
     related to their layers [#16], it's not possible to determine valid operations by themselves.
@@ -550,7 +559,7 @@ def generate_evaluations(
     operation_layers: Dict[str, List[MapLayer]]
 ) -> List[Evaluation]:
     """
-    Initialises Evaluations for a set of Operations and MapLayers
+    Initialise Evaluations for a set of Operations and MapLayers.
 
     As MapLayers are not linked to their operations [#16], this method uses additional context to set this for each
     operation:layer composite.
@@ -575,6 +584,8 @@ def generate_evaluations(
 
 def process_evaluations(evaluations: List[Evaluation]) -> None:
     """
+    Process each evaluation's evaluate method.
+
     :type evaluations: List[Evaluation]
     :param evaluations: evaluations to process
     """
@@ -584,7 +595,7 @@ def process_evaluations(evaluations: List[Evaluation]) -> None:
 
 def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
     """
-    Aggregates and summarises evaluation results for use in exports
+    Aggregate and summarise evaluation results for use in exports.
 
     Summarises evaluations by:
         1. totalling each result type, across all operations and layers
@@ -602,7 +613,7 @@ def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
     :type evaluations: List[Evaluation]
     :param evaluations: list of evaluations
     :rtype summary_evaluations: Dict
-    :return summary_evaluations: summarised evaluations
+    :return: summarised evaluations
     """
     _totals_by_result: Dict[str, int] = {
         EvaluationResult.NOT_EVALUATED.name: 0,
@@ -665,7 +676,7 @@ def prepare_export(
     operations: List[Operation],
 ) -> dict:
     """
-    Structures data results of evaluations for use in an export
+    Structures data results of evaluations for use in an export.
 
     The intention of this method is to structure information in a way that makes it easy to use in reporting tools
     (i.e. exports), as a result there is lots f duplication and simplification of data types for example.
@@ -767,7 +778,7 @@ def prepare_export(
 
 def export_json(export_data: dict, export_path: Path) -> None:
     """
-    JSON exporter
+    JSON exporter.
 
     Minimal example of an exporter.
 
@@ -782,7 +793,7 @@ def export_json(export_data: dict, export_path: Path) -> None:
 
 def export_google_sheets(config: Config, export_data: dict) -> None:
     """
-    Google Sheets exporter
+    Google Sheets exporter.
 
     More complex example of an exporter using a Google Sheets spreadsheet.
 
@@ -882,9 +893,7 @@ def export_google_sheets(config: Config, export_data: dict) -> None:
 
 
 def run() -> None:
-    """
-    Simple method to chain functions together and configure the application
-    """
+    """Chain functions together and configure the application."""
     logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
     operations = parse_operations(config=app_config)

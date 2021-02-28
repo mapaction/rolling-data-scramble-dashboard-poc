@@ -187,6 +187,16 @@ Python code should be linted using [Flake8](https://flake8.pycqa.org/en/latest/)
 $ poetry run flake8 src tests
 ```
 
+This will check various aspects inc.:
+
+* type annotations (except tests)
+* doc blocks (pep257 style)
+* consistent import ordering
+* code formatting (against Black)
+* estimated code complexity
+* python anti-patterns
+* possibly insecure code (this targets long hanging fruit only)
+
 Python code should follow PEP-8 (except line length), using the [Black](https://black.readthedocs.io) code formatter:
 
 ```shell
