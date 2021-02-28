@@ -13,6 +13,6 @@ jobs:
     - run: poetry install
     - run: poetry run flake8 src tests
     - run: poetry run mypy src
-    - run: poetry pytest
-    - run: poetry pytest --cov
-    - run: poetry pytest --typeguard-packages mapaction_rds_dashboard
+    - run: poetry run pytest
+    - run: poetry run pytest --cov
+    - run: poetry run pytest --typeguard-packages mapaction_rds_dashboard
