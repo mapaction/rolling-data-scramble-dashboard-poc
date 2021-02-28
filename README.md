@@ -211,6 +211,8 @@ $ poetry run mypy src
 $ poetry run pytest --typeguard-packages mapaction_rds_dashboard
 ```
 
+These conventions and standards are enforced automatically in [Continuous Integration](#continuous-integration).
+
 ### Tests
 
 All code should be covered by appropriate tests (unit, integration, etc.). Tests for this project are contained in the
@@ -219,6 +221,8 @@ All code should be covered by appropriate tests (unit, integration, etc.). Tests
 ```shell
 $ poetry run pytest
 ```
+
+These tests are ran automatically in [Continuous Integration](#continuous-integration).
 
 #### Test coverage
 
@@ -230,6 +234,10 @@ $ poetry run pytest --cov
 
 **Note:** Test coverage cannot measure the quality, or meaningfulness of any tests written, however it can identify 
 code without any tests.
+
+## Continuous Integration
+
+GitHub Actions are used to perform Continuous Integration tasks as defined in [`.github/workflows`](/.github/workflows).
 
 ## Release procedure
 
