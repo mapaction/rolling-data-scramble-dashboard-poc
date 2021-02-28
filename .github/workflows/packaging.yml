@@ -1,0 +1,58 @@
+name: Packaging
+
+# testing!
+on: push
+#on:
+#  push:
+#    branches:
+#      - main
+
+jobs:
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
+        name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      -
+        name: Setup Poetry
+        run: python -m pip install poetry==1.1.4
+      -
+        name: Build project package
+        run: poetry build
+      -
+        name: Store package artefacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-linux
+          path: dist
+  Windows:
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
+        name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      -
+        name: Setup Poetry
+        run: python.exe -m pip install poetry==1.1.4
+      -
+        name: Build project package
+        run: poetry.exe build
+      -
+        name: Store package artefacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-windows
+          path: dist
