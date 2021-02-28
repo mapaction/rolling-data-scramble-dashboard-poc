@@ -1,7 +1,7 @@
 name: Tests
 on: push
 jobs:
-  tests:
+  tests-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -9,7 +9,7 @@ jobs:
         with:
           python-version: 3.7
           architecture: x64
-      - run: pip install poetry==1.1.4
+      - run: python -m pip install poetry==1.1.4
       - run: poetry install
       - run: poetry run flake8 src tests
       - run: poetry run mypy src
@@ -18,3 +18,20 @@ jobs:
         run: poetry run pytest --cov
         continue-on-error: true
       - run: poetry run pytest --typeguard-packages mapaction_rds_dashboard
+  tests-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      - run: python.exe -m pip install poetry==1.1.4
+      - run: poetry.exe install
+      - run: poetry.exe run flake8 src tests
+      - run: poetry.exe run mypy src
+      - run: poetry.exe run pytest
+      -
+        run: poetry.exe run pytest --cov
+        continue-on-error: true
+      - run: poetry.exe run pytest --typeguard-packages mapaction_rds_dashboard
