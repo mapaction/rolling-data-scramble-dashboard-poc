@@ -1,0 +1,71 @@
+name: Tests
+on: push
+jobs:
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
+        name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      -
+        name: Setup Poetry
+        run: python -m pip install poetry==1.1.4
+      -
+        name: Setup project dependencies
+        run: poetry install
+      -
+        name: Run Flake8 linting
+        run: poetry run flake8 src tests
+      -
+        name: Run MyPy type checks
+        run: poetry run mypy src
+      -
+        name: Run test suite
+        run: poetry run pytest
+      -
+        name: Check test suite coverage
+        run: poetry run pytest --cov
+        continue-on-error: true
+      -
+        name: Run TypeGuard type checks
+        run: poetry run pytest --typeguard-packages mapaction_rds_dashboard
+  Windows:
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+      -
+        name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      -
+        name: Setup Poetry
+        run: python.exe -m pip install poetry==1.1.4
+      -
+        name: Setup project dependencies
+        run: poetry.exe install
+      -
+        name: Run Flake8 linting
+        run: poetry.exe run flake8 src tests
+      -
+        name: Run MyPy type checks
+        run: poetry.exe run mypy src
+      -
+        name: Run test suite
+        run: poetry.exe run pytest
+      -
+        name: Check test suite coverage
+        run: poetry.exe run pytest --cov
+        continue-on-error: true
+      -
+        name: Run TypeGuard type checks
+        run: poetry.exe run pytest --typeguard-packages mapaction_rds_dashboard
