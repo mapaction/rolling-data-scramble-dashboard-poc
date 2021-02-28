@@ -52,6 +52,7 @@ jobs:
       matrix:
         os: [ "ubuntu-latest", "windows-latest" ]
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/main'
     steps:
       -
         name: Checkout repository
@@ -82,6 +83,7 @@ jobs:
       matrix:
         os: [ "ubuntu-latest", "windows-latest" ]
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/main'
     steps:
       -
         name: Retrieve package artefacts
