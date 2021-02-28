@@ -1,12 +1,11 @@
 import os
-
 from pathlib import Path
 from typing import List
 
 from typing_extensions import TypedDict
 
 
-class Config(TypedDict):
+class Config(TypedDict, total=False):
     """
     Application configuration options
 
@@ -132,8 +131,10 @@ def google_drive_base_path() -> Path:
 
 config: Config = dict()
 
-config["google_drive_base_path"] = os.getenv(
-    "APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH", default=google_drive_base_path()
+config["google_drive_base_path"] = Path(
+    os.getenv(
+        "APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH", default=google_drive_base_path()
+    )
 )
 
 config["google_drive_operations_path"] = config["google_drive_base_path"].joinpath(

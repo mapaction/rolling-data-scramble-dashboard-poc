@@ -1,19 +1,17 @@
-import logging
-import sys
-import json
 from collections import OrderedDict
-
-import pandas as pd
 from datetime import datetime
-from enum import Enum, auto
-
+from enum import auto, Enum
+import json
+import logging
 from pathlib import Path
-from typing import List, Dict, Optional, Any
+import sys
+from typing import Any, Dict, List, Optional
 
-from oauth2client import service_account
-from pycountry import countries
-from oauth2client.service_account import ServiceAccountCredentials
 from df2gspread import df2gspread as d2g
+from oauth2client import service_account
+from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
+from pycountry import countries
 
 from mapaction_rds_dashboard import __version__
 from mapaction_rds_dashboard.config import Config, config as app_config
@@ -96,7 +94,7 @@ class MapLayer:
     As with other classes, only methods and properties required for the Rolling Data Scramble dashboard are included.
     """
 
-    def __init__(self, layer_id: str, error_messages: List[str]):
+    def __init__(self, layer_id: str, error_messages: List[str]) -> None:
         """
         Loads layer properties parses MapChef error messages
 
@@ -148,7 +146,7 @@ class MapProduct:
     As with other classes, only methods and properties required for the Rolling Data Scramble dashboard are included.
     """
 
-    def __init__(self, base_path: Path):
+    def __init__(self, base_path: Path) -> None:
         """
         Loads product, and product iteration, properties from MapChef output files
 
@@ -163,9 +161,8 @@ class MapProduct:
         if not self.base_path.is_dir():
             raise MapProductInvalid
 
-        self.map_chef_description_path: Optional[
-            Path
-        ] = self._get_latest_map_chef_description_path()
+        self.map_chef_description_path: Optional[Path]
+        self.map_chef_description_path = self._get_latest_map_chef_description_path()
         if self.map_chef_description_path is None:
             raise MapProductInvalid
 
@@ -216,7 +213,7 @@ class MapProduct:
         :rtype str
         :return: value of the property to get
         """
-        with open(self.map_chef_description_path, mode="r") as description_file:
+        with open(str(self.map_chef_description_path), mode="r") as description_file:
             description_data: Dict[str, str] = json.load(fp=description_file)
             return description_data[description_property]
 
@@ -230,7 +227,7 @@ class MapProduct:
         :rtype List[MapLayer]
         :return: layers in the primary map frame
         """
-        with open(self.map_chef_description_path, mode="r") as description_file:
+        with open(str(self.map_chef_description_path), mode="r") as description_file:
             description_data: dict = json.load(fp=description_file)
             primary_data_frame_id: str = description_data["principal_map_frame"]
             primary_data_frame: dict = dict()
@@ -267,7 +264,7 @@ class Operation:
     It's very likely there's a better way to do this, see [#13] for discussion.
     """
 
-    def __init__(self, base_path: Path):
+    def __init__(self, base_path: Path) -> None:
         """
         Loads operation properties from description files and performs minimal validation
 
@@ -380,10 +377,8 @@ class Operation:
         layers: List[MapLayer] = []
         layer_definitions: List[Dict[str, Any]] = list()
         with open(self.layer_properties_path, mode="r") as layers_properties_file:
-            layers_properties_data: Dict[
-                str,
-                List[Dict[str, Any]],
-            ] = json.load(fp=layers_properties_file)
+            layers_properties_data: Dict[str, List[Dict[str, Any]]]
+            layers_properties_data = json.load(fp=layers_properties_file)
             layer_definitions = layers_properties_data["layerProperties"]
 
         for layer in layer_definitions:
@@ -427,7 +422,7 @@ class Evaluation:
         MapChefError.LAYER_SCHEMA_INVALID: EvaluationResult.PASS_WITH_WARNINGS,
     }
 
-    def __init__(self, operation_id: str, layer: MapLayer):
+    def __init__(self, operation_id: str, layer: MapLayer) -> None:
         """
         :type operation_id: str
         :param operation_id: operation ID
@@ -477,19 +472,19 @@ def parse_operations(config: Config) -> List[Operation]:
     operations: List[Operation] = list()
 
     for operation_path in config["rds_operations_cmf_paths"]:
-        operation_path: Path = config["google_drive_base_path"].joinpath(
+        full_operation_path: Path = config["google_drive_base_path"].joinpath(
             config["google_drive_operations_path"], operation_path
         )
         try:
             # operation_path.resolve(strict=True)
-            operations.append(Operation(base_path=operation_path))
+            operations.append(Operation(base_path=full_operation_path))
         except FileNotFoundError:
             logging.warning(
-                f"Operation path '{operation_path}' does not appear to exist, ignoring operation."
+                f"Operation path '{full_operation_path}' does not appear to exist, ignoring operation."
             )
         except OperationInvalid:
             logging.warning(
-                f"Operation path '{operation_path}' does not appear to be valid, ignoring operation."
+                f"Operation path '{full_operation_path}' does not appear to be valid, ignoring operation."
             )
 
     return operations
@@ -569,8 +564,8 @@ def generate_evaluations(
     """
     evaluations: List[Evaluation] = list()
 
-    for operation_id, operation_layers in operation_layers.items():
-        for operation_layer in operation_layers:
+    for operation_id, operations_layers in operation_layers.items():
+        for operation_layer in operations_layers:
             evaluations.append(
                 Evaluation(operation_id=operation_id, layer=operation_layer)
             )
@@ -601,27 +596,27 @@ def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
     EvaluationResult enumeration for more information on the significance of each result type. The aggregations are
     based on the MapAction Data Naming Conventions [1], specifically the Category clause [2].
 
-    [1] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10137499820/MapAction+Data+Naming+Convention
-    [2] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10294491254/MapAction+Data+Naming+Convention+Values#MapActionDataNamingConventionValues-category
+    [1] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10137499820
+    [2] https://mapaction.atlassian.net/wiki/spaces/datacircle/pages/10294491254
 
     :type evaluations: List[Evaluation]
     :param evaluations: list of evaluations
     :rtype summary_evaluations: Dict
     :return summary_evaluations: summarised evaluations
     """
-    _totals_by_result = {
+    _totals_by_result: Dict[str, int] = {
         EvaluationResult.NOT_EVALUATED.name: 0,
         EvaluationResult.PASS.name: 0,
         EvaluationResult.PASS_WITH_WARNINGS.name: 0,
         EvaluationResult.FAIL.name: 0,
         EvaluationResult.ERROR.name: 0,
     }
-    _totals_by_result_by_operation = {}
-    _aggregated_layer_results_by_operation = {}
+    _totals_by_result_by_operation: Dict[str, Dict[str, int]] = {}
+    _aggregated_layer_results_by_operation: Dict[str, Dict[str, str]] = {}
 
     for evaluation in evaluations:
         if evaluation.operation_id not in _totals_by_result_by_operation.keys():
-            _totals_by_result_by_operation[evaluation.operation_id]: Dict[str, int] = {
+            _totals_by_result_by_operation[evaluation.operation_id] = {
                 EvaluationResult.NOT_EVALUATED.name: 0,
                 EvaluationResult.PASS.name: 0,
                 EvaluationResult.PASS_WITH_WARNINGS.name: 0,
@@ -635,9 +630,7 @@ def summarise_evaluations(evaluations: List[Evaluation]) -> Dict[str, dict]:
 
         layer_category = evaluation.layer.layer_id.split(sep="-")[1]
         if evaluation.operation_id not in _aggregated_layer_results_by_operation.keys():
-            _aggregated_layer_results_by_operation[evaluation.operation_id]: Dict[
-                str, str
-            ] = dict()
+            _aggregated_layer_results_by_operation[evaluation.operation_id] = dict()
         if (
             layer_category
             not in _aggregated_layer_results_by_operation[
@@ -690,9 +683,9 @@ def prepare_export(
     """
     export_version: int = 1
 
-    _operations: List[dict] = []
-    _operations_by_id: Dict[str, dict] = {}
-    _countries: Dict[str, str] = {}
+    _operations: List[dict] = list()
+    _operations_by_id: Dict[str, dict] = dict()
+    _countries: Dict[str, str] = dict()
     for operation in operations:
         _operations.append(operation.export())
         _operations_by_id[operation.operation_id] = operation.export()
@@ -710,13 +703,13 @@ def prepare_export(
     _ungrouped_results: List[Dict[str, str]] = list()
     for evaluation in evaluations:
         if evaluation.operation_id not in _results_by_operation.keys():
-            _results_by_operation[evaluation.operation_id]: Dict[str, str] = dict()
+            _results_by_operation[evaluation.operation_id] = dict()
         _results_by_operation[evaluation.operation_id][
             evaluation.layer.layer_id
         ] = evaluation.result.name
 
         if evaluation.layer.layer_id not in _results_by_layer.keys():
-            _results_by_layer[evaluation.layer.layer_id]: Dict[str, str] = dict()
+            _results_by_layer[evaluation.layer.layer_id] = dict()
         _results_by_layer[evaluation.layer.layer_id][
             evaluation.operation_id
         ] = evaluation.result.name
