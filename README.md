@@ -247,11 +247,9 @@ For all releases:
 
 1. create a release branch
 2. bump the project version using [`poetry version`](https://python-poetry.org/docs/cli/#version)
-3. update `__version__` variable in [`__init__.py`](src/mapaction_rds_dashboard/__init__.py) 
-   (needed until project is distributed as a package)
-4. close release in `CHANGELOG.md`
-5. push changes and merge the release branch into `main`
-6. create a tag and release through GitHub (tags should match the package version)
+3. close release in `CHANGELOG.md`
+4. push changes and merge the release branch into `main`
+5. create a tag and release through GitHub (tags should match the package version)
 
 ## Feedback
 

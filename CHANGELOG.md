@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 * [#47] Inconsistent element ordering for dictionaries in Google Sheets exporter
+* [#8] App version variable now sourced from package, rather than duplicated
 
 ### Changed
 
