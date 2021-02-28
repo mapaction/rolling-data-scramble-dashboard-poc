@@ -181,7 +181,25 @@ Ensure the `poetry.lock` file is included in the project repository.
 
 ### Code standards
 
-Python code should follow PEP-8 and use the [Black](https://black.readthedocs.io) code formatter.
+Python code should be linted using [Flake8](https://flake8.pycqa.org/en/latest/):
+
+```shell
+$ poetry run flake8 src tests
+```
+
+Python code should follow PEP-8 (except line length), using the [Black](https://black.readthedocs.io) code formatter:
+
+```shell
+$ poetry run black src tests
+```
+
+Python code (except tests) should use static type hints, validated using the [MyPy](https://mypy.readthedocs.io) and 
+[TypeGuard](https://typeguard.readthedocs.io) type checkers:
+
+```shell
+$ poetry run mypy src
+$ poetry run pytest --typeguard-packages mapaction_rds_dashboard
+```
 
 ### Tests
 

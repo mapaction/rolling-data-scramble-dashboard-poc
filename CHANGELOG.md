@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 * [#50] Testing and coverage support
+* [#50] Linting and type checking tools
 
 ### Fixed
 
@@ -28,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-* [#38] Support for using Google File Stream on Windows 
+* [#38] Support for using Google File Stream on Windows
 
 ### Changed
 

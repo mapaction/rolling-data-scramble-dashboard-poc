@@ -1,0 +1,8 @@
+[flake8]
+select = ANN,B,B9,BLK,C,E,F,I,S,W
+ignore = ANN101,E203,E501,W503
+per-file-ignores = tests/*:S101,ANN
+max-line-length = 120
+max-complexity = 10
+application-import-names = mapaction_rds_dashboard,tests
+import-order-style = google
