@@ -239,6 +239,8 @@ code without any tests.
 
 GitHub Actions are used to perform Continuous Integration tasks as defined in [`.github/workflows`](/.github/workflows).
 
+CI tasks are performed on both Linux and Windows platforms to ensure per-platform compatibility.
+
 ## Release procedure
 
 For all releases:
