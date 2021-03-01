@@ -29,6 +29,9 @@ jobs:
         name: Setup project dependencies
         run: poetry install
       -
+        name: Check project dependencies
+        run: poetry export --dev --format=requirements.txt --without-hashes | safety check --stdin
+      -
         name: Run Flake8 linting
         run: poetry run flake8 src tests
       -

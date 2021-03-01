@@ -181,6 +181,13 @@ Python dependencies are managed using [Poetry](https://python-poetry.org) which 
 
 Ensure the `poetry.lock` file is included in the project repository.
 
+Dependencies will be checked for vulnerabilities using [Safety](https://pyup.io/safety/) automatically in 
+[Continuous Integration](#continuous-integration). Dependencies can also be checked manually:
+
+```shell
+$ poetry export --dev --format=requirements.txt --without-hashes | safety check --stdin
+```
+
 ### Code standards
 
 Python code should be linted using [Flake8](https://flake8.pycqa.org/en/latest/):
