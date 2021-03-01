@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * [#50] Testing and coverage support
 * [#50] Linting and type checking tools
 * [#50] Continuous Integration using GitHub Actions
+* [#50] Continuous Deployment using GitHub Actions
 
 ### Fixed
 
