@@ -46,8 +46,8 @@ You will need to generate a
 suitable permissions to update the Google Sheets export. Save this file as `./google-application-credentials.json`
 relative to `entrypoint.py`.
 
+# install Python (min version 3.7.1)
 ```
-$ brew install python
 $ python3 -m pip install poetry
 $ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
 $ cd rolling-data-scramble-dashboard-poc/
@@ -80,7 +80,9 @@ A `run()` method calls and passes data between the steps needed to:
 This sequence of method calls is designed to allow each step to be run as part of a workflow for the Rolling Data
 Scramble, and in wider automation projects.
 
-The `update-dashboard` Poetry script is used to run this method.
+### Python version
+
+Python 3.7 is used for this project to ensure compatibility with ArcGIS' Python environment.
 
 #### Application configuration
 
@@ -158,13 +160,17 @@ Additional, static, sheets are also created with the most recent run for each da
 
 A local Python virtual environment managed by [Poetry](https://python-poetry.org) is used for development.
 
-```
-$ brew install python
-$ python3 -m pip install poetry
+```shell
+# install pyenv as per https://github.com/pyenv/pyenv#installation and/or install Python 3.7.x
+# install Poetry as per https://python-poetry.org/docs/#installation
 $ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
 $ cd rolling-data-scramble-dashboard-poc/
 $ poetry install
 ```
+
+**Note:** Use the correct [Python Version](#python-version) for this project.
+
+**Note:** Install Poetry using it's installer, not as Pip package, to ensure the correct Python version is used.
 
 ### Dependencies
 
