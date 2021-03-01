@@ -179,9 +179,6 @@ Python dependencies are managed using [Poetry](https://python-poetry.org) which 
 * use `poetry add` to add new dependencies (use `poetry add --dev` for development dependencies)
 * use `poetry update` to update all dependencies to latest allowed versions
 
-After changing dependencies, run `poetry export -f requirements.txt --output requirements.txt` to create a requirements
-file. This will be resolved when this project is released as a package.
-
 Ensure the `poetry.lock` file is included in the project repository.
 
 ### Code standards
