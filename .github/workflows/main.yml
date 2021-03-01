@@ -4,7 +4,7 @@ on: push
 
 jobs:
   test:
-    name: Test packages
+    name: 🧪 Tests
     strategy:
       matrix:
         os: [ "ubuntu-latest", "windows-latest" ]
@@ -33,7 +33,7 @@ jobs:
         run: poetry export --dev --format=requirements.txt --without-hashes --output requirements.txt
       -
         name: Check project dependencies
-        run: safety check --file requirements.txt
+        run: poetry run safety check --file requirements.txt
       -
         name: Run Flake8 linting
         run: poetry run flake8 src tests
@@ -52,7 +52,7 @@ jobs:
         run: poetry run pytest --typeguard-packages mapaction_rds_dashboard
 
   build:
-    name: Build packages
+    name: 📦 Build
     needs: test
     strategy:
       matrix:
@@ -83,7 +83,7 @@ jobs:
           path: dist
 
   verify:
-    name: Verify packages
+    name: 📋 Verify
     needs: build
     strategy:
       matrix:
