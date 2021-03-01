@@ -909,3 +909,7 @@ def run() -> None:
     )
     export_json(export_data=export_data, export_path=app_config["export_path"])
     export_google_sheets(config=app_config, export_data=export_data)
+
+
+if __name__ == "__main__":
+    run()
