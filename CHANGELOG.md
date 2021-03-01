@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * [#50] Continuous Integration using GitHub Actions
 * [#50] Continuous Deployment using GitHub Actions
 * [#50] Python dependency security checking with `safety` package
+* [#55] Pyenv support for local development environments
 
 ### Fixed
 

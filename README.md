@@ -20,21 +20,27 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 
 **Note:** Follow the steps in the [Setup](#setup) section first.
 
-**Note**: This application uses a hard coded base path to shared drives, meaning it will only work on macOS (see #8).
-
 ```shell
 $ python -m mapaction_rds_dashboard.app 
 ```
 
 This will:
 
-* produce a local file `export.json`
+* produce a `export.json` file in the current directory (this can be ignored but is useful for debugging)
 * update this [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/)
 
-### Add a new operation/country
+### Adding a new operation/country
 
-Once the Crash Move Folder for the relevant operation(s) has been created in Google Drive, the CMF / Operation ID needs
-to be added to the `rds_operations_cmf_paths` [config](#application-configuration) option.
+1. create the Crash Move Folder for the new operation
+2. ensure the `operation_id` property is set in the CMF `event_description.json` file
+3. add the name of the CMF directory to the `rds_operations_cmf_paths` [config](#application-configuration) option
+4. update the dashboard
+
+### Support
+
+As a proof of concept, there isn't any formal support for this application. However if you're experimenting with it
+and have a problem please contact @dsoares & @ffennell, or @asmith in the 
+[#topic-rolling-data-scrambles](https://mapaction.slack.com/archives/C01DDCTAWG4) channel in the MapAction Slack.
 
 ## Setup
 
@@ -43,42 +49,32 @@ installed with suitable permissions to access shared drives.
 
 You will need to generate a
 [Google OAuth credential](https://df2gspread.readthedocs.io/en/latest/overview.html#access-credentials) with
-suitable permissions to update the Google Sheets export. Save this file as `./google-application-credentials.json`
-relative to `entrypoint.py`.
+suitable permissions to update the Google Sheets export. Save this credential as a file relative to where you run the
+application, or, set an environment variable `APP_RDS_DASHBOARD_GOOGLE_SERVICE_CREDENTIAL_PATH` to its absolute path.
 
+```shell
 # install Python (min version 3.7.1)
+$ python3 -m pip install mapaction-rds-dashboard
 ```
-$ python3 -m pip install poetry
-$ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
-$ cd rolling-data-scramble-dashboard-poc/
-$ poetry install --no-dev
-```
-
-### Support
-
-As a proof of concept there isn't any formal support for this application. However if you're experimenting with it
-and have a problem please contact @dsoares & @ffennell, or @asmith in the [#topic-rolling-data-scrambles]
-(https://mapaction.slack.com/archives/C01DDCTAWG4) channel in the MapAction Slack.
 
 ## Implementation
 
 ### Application
 
-To allow future integration into other parts of the Rolling Data Scramble and wider automation projects, this
-project is written in Python.
+To allow future integration into other parts of the Rolling Data Scramble, and wider automation projects, the 
+application for this project written in Python.
 
-The application for this project is written in Python as a set of classes and functions contained in a 
-[`mapaction_rds_dashboard`](src/mapaction_rds_dashboard) package.
+Classes and methods are contained in a package, [`mapaction_rds_dashboard`](src/mapaction_rds_dashboard).
 
-A `run()` method calls and passes data between the steps needed to:
+In brief these classes and methods are used to:
 
 1. for a set of operations, read their details from their Crash Move Folders
 2. specifically, read the MapChef output about the layers in the 'MA9999' pseudo-product
-3. if found, these layers are evaluated to see if they contain errors reported by MapChef
+3. if found, these layers are evaluated to see if they contain errors reported by MapChe
+4. if not found (because MapChef hasn't run yet), layers from a definition file will be used and evaluated as failed
 4. one or more [Exporters](#exporters) visualise these evaluations in different formats and services
 
-This sequence of method calls is designed to allow each step to be run as part of a workflow for the Rolling Data
-Scramble, and in wider automation projects.
+These steps or tasks are intentionally split to allow for future integration into a workflow (such as Airflow).
 
 ### Python version
 
@@ -93,38 +89,34 @@ provided in this dictionary's description.
 These default values can optionally be overridden using environment variables in the form: 
 `APP_RDS_DASHBOARD_{CONFIG-OPTION}`.
 
-**Note:** The `rds_operations_cmf_paths` config option cannot be overridden this way.
-
 For example to override the `google_drive_base_path` config option to `/Foo`, set an environment variable:
 
 ```
 APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH=/foo
 ```
 
-See the notes in the `config.py` module for valid values for configuration options.
+**Note:** The `rds_operations_cmf_paths` config option cannot be overridden this way.
 
 ### Exporters
 
-Exports are responsible for transforming a common [Export Format](#export-format) into a structure or configuration
+Exports are responsible for transforming the common [Export Format](#export-format) into a structure or configuration
 specific to, and suitable for, a format or service.
-
-This common export format is therefore intended as stable interface between how data/results are generated, and
-how/where these results are visualised.
 
 #### Export format
 
-To make it easier for exporters to access results information in the form they expect (e.g. organised as a flat list of
-results, or grouped by operation, or by layer, or result, etc.) a common export format is generated.
+To make it easier for exporters to access result information in the form they expect (e.g. organised as a flat list of
+results, grouped by operation, by layer, or by result, etc.) a common export format is generated.
 
-In brief, this export consists of a Python dict that can be easily serialised (e.g. to JSON). It has two top level
-members:
+This format forms a stable interface between how data/results are generated, and how/where these results are visualised.
 
-* `data`, which contains information about:
+In brief, this format is a Python dict that can be easily serialised (e.g. to JSON). It has two top level members:
+
+1. `data`, which contains information about:
   * affected countries from each operation
   * details of operations
   * results grouped by operation, layer and result
   * summary statistics (results for aggregated layers and totals for each result type)
-* `meta`, which contains information about:
+2. `meta`, which contains information about:
   * when a specific export instance was generated
   * the version of the export format used in that instance
   * the version of the application that generated that instance
@@ -132,9 +124,12 @@ members:
     * aggregated layers (e.g. 'tran' can be shown as 'Transport' )
     * evaluation results (e.g. 'PASS_WITH_WARNINGS' can be shown as 'Warning')
 
-The structure and keys used in this export are guaranteed to stay the same within the same export format version.
+#### Export format versions
 
-If changes are made, a new format version will be added and a deprecation policy agreed for removing older versions.
+The structure and keys used in this export format are guaranteed to stay the same within each version. Any new versions 
+will include a deprecation policy for removing older versions.
+
+Version 1 is the current export format version.
 
 #### JSON exporter
 
@@ -142,17 +137,18 @@ A very simple JSON exporter is included to:
 
 * persist the [Export Format](#export-format) into a file suitable for re-use in other tools if needed
 * demonstrate what a minimal exporter looks like
+* assist with debugging
 
 #### Google Sheets exporter
 
-A more complex and useful exporter which uses a Panda's data frame as the source for a Google Docs spreadsheet.
+A more complex and useful exporter, which uses a Panda's data frame as the source for a 
+[Google Docs spreadsheet](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/).
 
-Two dynamic tabs/sheets are included using results from the most recent run of the application:
+Tabs/sheets are included for:
 
-* a summary of aggregated layers per operation
-* details of each layer per operation
-
-Additional, static, sheets are also created with the most recent run for each day.
+1. aggregated layers per operation
+2. details of each layer per operation
+3. static sheets for the most recent run for each day
 
 ## Development
 
@@ -244,11 +240,24 @@ $ poetry run pytest --cov
 **Note:** Test coverage cannot measure the quality, or meaningfulness of any tests written, however it can identify 
 code without any tests.
 
-## Continuous Integration
+### Continuous Integration
 
 GitHub Actions are used to perform Continuous Integration tasks as defined in [`.github/workflows`](/.github/workflows).
 
 CI tasks are performed on both Linux and Windows platforms to ensure per-platform compatibility.
+
+## Deployment
+
+This project is distributed as a Python package, available through 
+[PyPi](https://pypi.org/project/mapaction_rds_dashboard/) and installable through Pip.
+
+Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment). 
+
+**Note:** These packages are pure Python and compatible with all operating systems.
+
+### Continuous Deployment
+
+GitHub Actions are used to perform Continuous Deployment tasks as defined in [`.github/workflows`](/.github/workflows).
 
 ## Release procedure
 
@@ -258,7 +267,9 @@ For all releases:
 2. bump the project version using [`poetry version`](https://python-poetry.org/docs/cli/#version)
 3. close release in `CHANGELOG.md`
 4. push changes and merge the release branch into `main`
-5. create a tag and release through GitHub (tags should match the package version)
+5. create a tag and release through GitHub:
+   * tags should match the package version
+   * package builds should be attached as artefacts
 
 ## Feedback
 
@@ -267,8 +278,8 @@ Feedback of any kind is welcome.
 For feedback on how this application works, please raise an issue in this [GitHub
 repository](https://github.com/mapaction/rolling-data-scramble-dashboard-poc).
 
-For feedback on where this application sits in relation to other automation projects, please comment on the
-[Jira issue](https://mapaction.atlassian.net/browse/PMVP-59) for this project.
+For feedback on the wider context of this project, please comment on this
+[Jira issue](https://mapaction.atlassian.net/browse/PMVP-59).
 
 ## Licence
 
