@@ -179,10 +179,14 @@ Python dependencies are managed using [Poetry](https://python-poetry.org) which 
 * use `poetry add` to add new dependencies (use `poetry add --dev` for development dependencies)
 * use `poetry update` to update all dependencies to latest allowed versions
 
-After changing dependencies, run `poetry export -f requirements.txt --output requirements.txt` to create a requirements
-file. This will be resolved when this project is released as a package.
-
 Ensure the `poetry.lock` file is included in the project repository.
+
+Dependencies will be checked for vulnerabilities using [Safety](https://pyup.io/safety/) automatically in 
+[Continuous Integration](#continuous-integration). Dependencies can also be checked manually:
+
+```shell
+$ poetry export --dev --format=requirements.txt --without-hashes | safety check --stdin
+```
 
 ### Code standards
 
