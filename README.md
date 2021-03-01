@@ -20,8 +20,6 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 
 **Note:** Follow the steps in the [Setup](#setup) section first.
 
-**Note**: This application uses a hard coded base path to shared drives, meaning it will only work on macOS (see #8).
-
 ```shell
 $ python -m mapaction_rds_dashboard.app 
 ```
