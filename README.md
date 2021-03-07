@@ -112,17 +112,17 @@ This format forms a stable interface between how data/results are generated, and
 In brief, this format is a Python dict that can be easily serialised (e.g. to JSON). It has two top level members:
 
 1. `data`, which contains information about:
-  * affected countries from each operation
-  * details of operations
-  * results grouped by operation, layer and result
-  * summary statistics (results for aggregated layers and totals for each result type)
+    * affected countries from each operation
+    * details of operations
+    * results grouped by operation, layer and result
+    * summary statistics (results for aggregated layers and totals for each result type)
 2. `meta`, which contains information about:
-  * when a specific export instance was generated
-  * the version of the export format used in that instance
-  * the version of the application that generated that instance
-  * labels that can be used to more nice format things like:
-    * aggregated layers (e.g. 'tran' can be shown as 'Transport' )
-    * evaluation results (e.g. 'PASS_WITH_WARNINGS' can be shown as 'Warning')
+    * when a specific export instance was generated
+    * the version of the export format used in that instance
+    * the version of the application that generated that instance
+    * labels that can be used to more nice format things like:
+        * aggregated layers (e.g. 'tran' can be shown as 'Transport' )
+        * evaluation results (e.g. 'PASS_WITH_WARNINGS' can be shown as 'Warning')
 
 #### Export format versions
 
@@ -166,7 +166,7 @@ $ poetry install
 
 **Note:** Use the correct [Python Version](#python-version) for this project.
 
-**Note:** Install Poetry using it's installer, not as Pip package, to ensure the correct Python version is used.
+**Note:** To ensure the correct Python version is used, install Poetry using it's installer, not as a Pip package.
 
 ### Dependencies
 
@@ -249,7 +249,7 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 ## Deployment
 
 This project is distributed as a Python package, available through 
-[PyPi](https://pypi.org/project/mapaction_rds_dashboard/) and installable through Pip.
+[PyPi](https://pypi.org/project/...) and installable through Pip.
 
 Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment). 
 
@@ -269,7 +269,8 @@ For all releases:
 4. push changes and merge the release branch into `main`
 5. create a tag and release through GitHub:
    * tags should match the package version
-   * package builds should be attached as artefacts
+   * new tags will trigger [Continuous Deployment](#continuous-deployment)
+   * attach the packages Continuous Deployment creates as assets in the release
 
 ## Feedback
 
