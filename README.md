@@ -21,7 +21,7 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 **Note:** Follow the steps in the [Setup](#setup) section first.
 
 ```shell
-$ python -m mapaction_rds_dashboard.app 
+$ python -m mapaction_rds_dashboard.app
 ```
 
 This will:
@@ -39,7 +39,7 @@ This will:
 ### Support
 
 As a proof of concept, there isn't any formal support for this application. However if you're experimenting with it
-and have a problem please contact @dsoares & @ffennell, or @asmith in the 
+and have a problem please contact @dsoares & @ffennell, or @asmith in the
 [#topic-rolling-data-scrambles](https://mapaction.slack.com/archives/C01DDCTAWG4) channel in the MapAction Slack.
 
 ## Setup
@@ -61,7 +61,7 @@ $ python3 -m pip install mapaction-rds-dashboard
 
 ### Application
 
-To allow future integration into other parts of the Rolling Data Scramble, and wider automation projects, the 
+To allow future integration into other parts of the Rolling Data Scramble, and wider automation projects, the
 application for this project written in Python.
 
 Classes and methods are contained in a package, [`mapaction_rds_dashboard`](src/mapaction_rds_dashboard).
@@ -83,10 +83,10 @@ Python 3.7 is used for this project to ensure compatibility with ArcGIS' Python 
 #### Application configuration
 
 Configuration options for this application are defined in the `config.py` module. This uses a typed dictionary to
-define the options available. Descriptions of what each config option does, and default values used for each, are 
+define the options available. Descriptions of what each config option does, and default values used for each, are
 provided in this dictionary's description.
 
-These default values can optionally be overridden using environment variables in the form: 
+These default values can optionally be overridden using environment variables in the form:
 `APP_RDS_DASHBOARD_{CONFIG-OPTION}`.
 
 For example to override the `google_drive_base_path` config option to `/Foo`, set an environment variable:
@@ -126,7 +126,7 @@ In brief, this format is a Python dict that can be easily serialised (e.g. to JS
 
 #### Export format versions
 
-The structure and keys used in this export format are guaranteed to stay the same within each version. Any new versions 
+The structure and keys used in this export format are guaranteed to stay the same within each version. Any new versions
 will include a deprecation policy for removing older versions.
 
 Version 1 is the current export format version.
@@ -141,7 +141,7 @@ A very simple JSON exporter is included to:
 
 #### Google Sheets exporter
 
-A more complex and useful exporter, which uses a Panda's data frame as the source for a 
+A more complex and useful exporter, which uses a Panda's data frame as the source for a
 [Google Docs spreadsheet](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/).
 
 Tabs/sheets are included for:
@@ -159,6 +159,7 @@ A local Python virtual environment managed by [Poetry](https://python-poetry.org
 ```shell
 # install pyenv as per https://github.com/pyenv/pyenv#installation and/or install Python 3.7.x
 # install Poetry as per https://python-poetry.org/docs/#installation
+# install pre-commit as per https://pre-commit.com/
 $ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
 $ cd rolling-data-scramble-dashboard-poc/
 $ poetry install
@@ -177,7 +178,7 @@ Python dependencies are managed using [Poetry](https://python-poetry.org) which 
 
 Ensure the `poetry.lock` file is included in the project repository.
 
-Dependencies will be checked for vulnerabilities using [Safety](https://pyup.io/safety/) automatically in 
+Dependencies will be checked for vulnerabilities using [Safety](https://pyup.io/safety/) automatically in
 [Continuous Integration](#continuous-integration). Dependencies can also be checked manually:
 
 ```shell
@@ -186,13 +187,15 @@ $ poetry export --dev --format=requirements.txt --without-hashes | safety check 
 
 ### Code standards
 
+All files should exclude trailing whitespace and include an empty final line.
+
 Python code should be linted using [Flake8](https://flake8.pycqa.org/en/latest/):
 
 ```shell
 $ poetry run flake8 src tests
 ```
 
-This will check various aspects inc.:
+This will check various aspects including:
 
 * type annotations (except tests)
 * doc blocks (pep257 style)
@@ -208,7 +211,7 @@ Python code should follow PEP-8 (except line length), using the [Black](https://
 $ poetry run black src tests
 ```
 
-Python code (except tests) should use static type hints, validated using the [MyPy](https://mypy.readthedocs.io) and 
+Python code (except tests) should use static type hints, validated using the [MyPy](https://mypy.readthedocs.io) and
 [TypeGuard](https://typeguard.readthedocs.io) type checkers:
 
 ```shell
@@ -216,7 +219,10 @@ $ poetry run mypy src
 $ poetry run pytest --typeguard-packages mapaction_rds_dashboard
 ```
 
-These conventions and standards are enforced automatically in [Continuous Integration](#continuous-integration).
+These conventions and standards are enforced automatically using a combination of:
+
+* local Git [pre-commit hooks](https://pre-commit.com/) hooks/scripts (Flake8 checks only)
+* remote [Continuous Integration](#continuous-integration) (all checks)
 
 ### Tests
 
@@ -237,7 +243,7 @@ Test coverage can be checked using [Coverage](https://coverage.readthedocs.io/):
 $ poetry run pytest --cov
 ```
 
-**Note:** Test coverage cannot measure the quality, or meaningfulness of any tests written, however it can identify 
+**Note:** Test coverage cannot measure the quality, or meaningfulness of any tests written, however it can identify
 code without any tests.
 
 ### Continuous Integration
@@ -248,10 +254,10 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 
 ## Deployment
 
-This project is distributed as a Python package, available through 
+This project is distributed as a Python package, available through
 [PyPi](https://pypi.org/project/...) and installable through Pip.
 
-Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment). 
+Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment).
 
 **Note:** These packages are pure Python and compatible with all operating systems.
 
@@ -259,7 +265,7 @@ To build and publish packages manually:
 
 ```shell
 $ poetry build
-$ poetry publish --repository testpypi 
+$ poetry publish --repository testpypi
 ```
 
 **Note:** You will need a PyPi registry API token to publish packages, set with `poetry config pypi-token.testpypi xxx`.

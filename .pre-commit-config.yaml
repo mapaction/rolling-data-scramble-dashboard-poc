@@ -1,0 +1,16 @@
+repos:
+    -
+        repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v2.3.0
+        hooks:
+            -   id: check-yaml
+            -   id: end-of-file-fixer
+            -   id: trailing-whitespace
+    -   repo: local
+        hooks:
+            -
+                id: flake8
+                name: Flake8
+                entry: poetry run flake8 src tests
+                language: system
+                types: [python]
