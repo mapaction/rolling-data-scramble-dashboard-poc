@@ -55,8 +55,12 @@ jobs:
     name: 📦 Build
     needs: test
     runs-on: "ubuntu-latest"
-    if: github.ref == 'refs/heads/main'
+    ## if commit is in the 'main' branch
+    # if: github.ref == 'refs/heads/main'
     steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
       -
         name: Checkout repository
         uses: actions/checkout@v2
