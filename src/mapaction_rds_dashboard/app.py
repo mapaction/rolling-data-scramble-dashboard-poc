@@ -72,8 +72,6 @@ class MapChefError(Enum):
     An enumeration of possible error conditions reported by MapChef.
 
     Errors are matched against the human readable error MapChef includes in layer output files.
-
-    @todo: is this list complete? [#10]
     """
 
     LAYER_DATASOURCE_NONE = "Unable to find dataset for this layer"
@@ -271,7 +269,6 @@ class Operation:
         Validation is currently limited to whether the operation ID is not an empty string. This is intended to prevent
         an unconfigured CMF being processed, as this will lead to errors later on.
 
-        @todo: find a better of determining whether a CMF has not been configured [#9]
         :raises OperationInvalid: If the operation ID is an empty string, the operation is considered invalid.
 
         :type base_path: Path
