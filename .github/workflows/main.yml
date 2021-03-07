@@ -87,7 +87,7 @@ jobs:
         os: [ "ubuntu-latest", "windows-latest" ]
     runs-on: ${{ matrix.os }}
     ## if commit is in the 'main' branch
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     steps:
       -
         name: Retrieve package artefacts
