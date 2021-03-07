@@ -54,10 +54,7 @@ jobs:
   build:
     name: 📦 Build
     needs: test
-    strategy:
-      matrix:
-        os: [ "ubuntu-latest", "windows-latest" ]
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
     steps:
       -
@@ -79,7 +76,7 @@ jobs:
         name: Store package artefacts
         uses: actions/upload-artifact@v2
         with:
-          name: dist-${{ runner.os }}
+          name: dist
           path: dist
 
   verify:
@@ -89,13 +86,14 @@ jobs:
       matrix:
         os: [ "ubuntu-latest", "windows-latest" ]
     runs-on: ${{ matrix.os }}
+    ## if commit is in the 'main' branch
     if: github.ref == 'refs/heads/main'
     steps:
       -
         name: Retrieve package artefacts
         uses: actions/download-artifact@v2
         with:
-          name: dist-${{ runner.os }}
+          name: dist
       -
         name: Setup Python
         uses: actions/setup-python@v1
@@ -108,3 +106,36 @@ jobs:
       -
         name: Test installing project package
         run: python -m pip install --find-links=. mapaction_rds_dashboard
+
+  release:
+    name: 🚚 Release
+    needs: verify
+    runs-on: "ubuntu-latest"
+    ## if commit is a tag
+    # if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      -
+        name: Retrieve package artefacts
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+      -
+        name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+      -
+        name: Upgrade Python Pip
+        run: python -m pip install --upgrade pip
+      -
+        name: Setup Poetry
+        run: python -m pip install poetry==1.1.4
+      -
+        name: Authenticate with PyPi
+        run: poetry config pypi-token.testpypi xxx
+      -
+        name: Publish package to PyPi
+        run: poetry publish --repository testpypi
+        env:
+          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.POETRY_PYPI_TOKEN_TESTPYPI }}

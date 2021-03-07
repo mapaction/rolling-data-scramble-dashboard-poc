@@ -249,7 +249,7 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 ## Deployment
 
 This project is distributed as a Python package, available through 
-[PyPi](https://pypi.org/project/mapaction_rds_dashboard/) and installable through Pip.
+[PyPi](https://pypi.org/project/...) and installable through Pip.
 
 Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment). 
 
@@ -269,7 +269,8 @@ For all releases:
 4. push changes and merge the release branch into `main`
 5. create a tag and release through GitHub:
    * tags should match the package version
-   * package builds should be attached as artefacts
+   * new tags will trigger [Continuous Deployment](#continuous-deployment)
+   * attach the packages Continuous Deployment creates as assets in the release
 
 ## Feedback
 
