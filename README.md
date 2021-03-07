@@ -255,6 +255,15 @@ Both source and binary (Python wheel) packages are built during [Continuous Depl
 
 **Note:** These packages are pure Python and compatible with all operating systems.
 
+To build and publish packages manually:
+
+```shell
+$ poetry build
+$ poetry publish --repository testpypi 
+```
+
+**Note:** You will need a PyPi registry API token to publish packages, set with `poetry config pypi-token.testpypi xxx`.
+
 ### Continuous Deployment
 
 GitHub Actions are used to perform Continuous Deployment tasks as defined in [`.github/workflows`](/.github/workflows).
