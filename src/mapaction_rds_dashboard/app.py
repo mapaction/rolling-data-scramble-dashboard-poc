@@ -480,12 +480,7 @@ def parse_operations(config: Config) -> List[Operation]:
             config["google_drive_operations_path"], operation_path
         )
         try:
-            # operation_path.resolve(strict=True)
             operations.append(Operation(base_path=full_operation_path))
-        except FileNotFoundError:
-            logging.warning(
-                f"Operation path '{full_operation_path}' does not appear to exist, ignoring operation."
-            )
         except OperationInvalid:
             logging.warning(
                 f"Operation path '{full_operation_path}' does not appear to be valid, ignoring operation."
