@@ -159,6 +159,7 @@ A local Python virtual environment managed by [Poetry](https://python-poetry.org
 ```shell
 # install pyenv as per https://github.com/pyenv/pyenv#installation and/or install Python 3.7.x
 # install Poetry as per https://python-poetry.org/docs/#installation
+# install pre-commit as per https://pre-commit.com/
 $ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
 $ cd rolling-data-scramble-dashboard-poc/
 $ poetry install
@@ -186,13 +187,15 @@ $ poetry export --dev --format=requirements.txt --without-hashes | safety check 
 
 ### Code standards
 
+All files should exclude trailing whitespace and include an empty final line.
+
 Python code should be linted using [Flake8](https://flake8.pycqa.org/en/latest/):
 
 ```shell
 $ poetry run flake8 src tests
 ```
 
-This will check various aspects inc.:
+This will check various aspects including:
 
 * type annotations (except tests)
 * doc blocks (pep257 style)
@@ -216,7 +219,10 @@ $ poetry run mypy src
 $ poetry run pytest --typeguard-packages mapaction_rds_dashboard
 ```
 
-These conventions and standards are enforced automatically in [Continuous Integration](#continuous-integration).
+These conventions and standards are enforced automatically using a combination of:
+
+* local Git [pre-commit hooks](https://pre-commit.com/) hooks/scripts (Flake8 checks only)
+* remote [Continuous Integration](#continuous-integration) (all checks)
 
 ### Tests
 
