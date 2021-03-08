@@ -1,4 +1,4 @@
-from mapaction_rds_dashboard import __version__
+from mapy_rds_dashboard import __version__
 
 
 def test_version():

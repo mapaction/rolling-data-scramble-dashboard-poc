@@ -13,8 +13,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 from pycountry import countries
 
-from mapaction_rds_dashboard import __version__
-from mapaction_rds_dashboard.config import Config, config as app_config
+from mapy_rds_dashboard import __version__
+from mapy_rds_dashboard.config import Config, config as app_config
 
 
 class OperationInvalid(Exception):

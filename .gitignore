@@ -1,6 +1,7 @@
 __pycache__
 .pytest_cache
 .mypy_cache
+.venv
 dist
 .coverage
 google-application-credentials.json
