@@ -21,7 +21,7 @@ This is a Proof of Concept / alpha application. Its availability or correctness 
 **Note:** Follow the steps in the [Setup](#setup) section first.
 
 ```shell
-$ python -m mapaction_rds_dashboard.app
+$ python -m mapy_rds_dashboard.app
 ```
 
 This will:
@@ -54,7 +54,7 @@ application, or, set an environment variable `APP_RDS_DASHBOARD_GOOGLE_SERVICE_C
 
 ```shell
 # install Python (min version 3.7.1)
-$ python3 -m pip install mapaction-rds-dashboard
+$ python3 -m pip install mapy-rds-dashboard
 ```
 
 ## Implementation
@@ -64,7 +64,7 @@ $ python3 -m pip install mapaction-rds-dashboard
 To allow future integration into other parts of the Rolling Data Scramble, and wider automation projects, the
 application for this project written in Python.
 
-Classes and methods are contained in a package, [`mapaction_rds_dashboard`](src/mapaction_rds_dashboard).
+Classes and methods are contained in a package, [`mapy_rds_dashboard`](src/mapy_rds_dashboard).
 
 In brief these classes and methods are used to:
 
@@ -160,6 +160,7 @@ A local Python virtual environment managed by [Poetry](https://python-poetry.org
 # install pyenv as per https://github.com/pyenv/pyenv#installation and/or install Python 3.7.x
 # install Poetry as per https://python-poetry.org/docs/#installation
 # install pre-commit as per https://pre-commit.com/
+$ poetry config virtualenvs.in-project true
 $ git clone https://github.com/mapaction/rolling-data-scramble-dashboard-poc.git
 $ cd rolling-data-scramble-dashboard-poc/
 $ poetry install
@@ -168,6 +169,9 @@ $ poetry install
 **Note:** Use the correct [Python Version](#python-version) for this project.
 
 **Note:** To ensure the correct Python version is used, install Poetry using it's installer, not as a Pip package.
+
+**Note:** Running `poetry config virtualenvs.in-project true` is optional but recommended to keep all project components
+grouped together.
 
 ### Dependencies
 
@@ -216,7 +220,7 @@ Python code (except tests) should use static type hints, validated using the [My
 
 ```shell
 $ poetry run mypy src
-$ poetry run pytest --typeguard-packages mapaction_rds_dashboard
+$ poetry run pytest --typeguard-packages mapy_rds_dashboard
 ```
 
 These conventions and standards are enforced automatically using a combination of:

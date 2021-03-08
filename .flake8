@@ -4,6 +4,6 @@ ignore = ANN101,D100,D104,D105,E203,E501,W503
 per-file-ignores = tests/*:S101,ANN
 max-line-length = 120
 max-complexity = 10
-application-import-names = mapaction_rds_dashboard,tests
+application-import-names = mapy_rds_dashboard,tests
 import-order-style = google
 docstring-convention = pep257
