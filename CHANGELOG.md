@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-03-08
+
 ### Changed [BREAKING!]
 
 * [#70] Renamed package from `mapaction_rds_dashboard` to `mapy_rds_dashboard`
