@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapy-rds-dashboard"
-version = "0.3.0-alpha.0"
+version = "0.3.0-alpha.1"
 description = "Proof of concept dashboard for the status of MapAction Rolling Data Scrambles"
 license = "MIT"
 authors = [
