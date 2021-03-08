@@ -261,7 +261,8 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 This project is distributed as a Python package, available through
 [PyPi](https://pypi.org/project/...) and installable through Pip.
 
-Both source and binary (Python wheel) packages are built during [Continuous Deployment](#continuous-deployment).
+Both source and binary (Python wheel) packages are built automatically during 
+[Continuous Deployment](#continuous-deployment) for all tagged releases.
 
 **Note:** These packages are pure Python and compatible with all operating systems.
 
