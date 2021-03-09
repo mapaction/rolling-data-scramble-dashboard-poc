@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+* [#81] Updating project dependencies
+
 ### Fixed
 
 * [#82] Removed hard-coded `country-responses` CMF path to support operations in `prepared-country-data`
