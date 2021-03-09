@@ -228,6 +228,12 @@ These conventions and standards are enforced automatically using a combination o
 * local Git [pre-commit hooks](https://pre-commit.com/) hooks/scripts (Flake8 checks only)
 * remote [Continuous Integration](#continuous-integration) (all checks)
 
+To run pre-commit hooks manually:
+
+```shell
+$ pre-commit run --all-files
+```
+
 ### Tests
 
 All code should be covered by appropriate tests (unit, integration, etc.). Tests for this project are contained in the
@@ -261,7 +267,7 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 This project is distributed as a Python package, available through
 [PyPi](https://pypi.org/project/...) and installable through Pip.
 
-Both source and binary (Python wheel) packages are built automatically during 
+Both source and binary (Python wheel) packages are built automatically during
 [Continuous Deployment](#continuous-deployment) for all tagged releases.
 
 **Note:** These packages are pure Python and compatible with all operating systems.

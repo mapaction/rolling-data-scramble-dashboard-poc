@@ -476,7 +476,9 @@ def parse_operations(config: Config) -> List[Operation]:
     operations: List[Operation] = list()
 
     for operation_path in config["rds_operations_cmf_paths"]:
-        full_operation_path: Path = config["google_drive_base_path"].joinpath(operation_path)
+        full_operation_path: Path = config["google_drive_base_path"].joinpath(
+            operation_path
+        )
         try:
             operations.append(Operation(base_path=full_operation_path))
         except OperationInvalid:
