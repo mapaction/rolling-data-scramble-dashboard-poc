@@ -89,10 +89,10 @@ provided in this dictionary's description.
 These default values can optionally be overridden using environment variables in the form:
 `APP_RDS_DASHBOARD_{CONFIG-OPTION}`.
 
-For example to override the `google_drive_base_path` config option to `/Foo`, set an environment variable:
+For example to override the `all_products_product_id` config option to `MA1234`, set an environment variable:
 
 ```
-APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH=/foo
+APP_RDS_DASHBOARD_ALL_PRODUCTS_ID=MA1234
 ```
 
 **Note:** The `rds_operations_cmf_paths` config option cannot be overridden this way.
@@ -228,6 +228,12 @@ These conventions and standards are enforced automatically using a combination o
 * local Git [pre-commit hooks](https://pre-commit.com/) hooks/scripts (Flake8 checks only)
 * remote [Continuous Integration](#continuous-integration) (all checks)
 
+To run pre-commit hooks manually:
+
+```shell
+$ pre-commit run --all-files
+```
+
 ### Tests
 
 All code should be covered by appropriate tests (unit, integration, etc.). Tests for this project are contained in the
@@ -261,7 +267,7 @@ CI tasks are performed on both Linux and Windows platforms to ensure per-platfor
 This project is distributed as a Python package, available through
 [PyPi](https://pypi.org/project/...) and installable through Pip.
 
-Both source and binary (Python wheel) packages are built automatically during 
+Both source and binary (Python wheel) packages are built automatically during
 [Continuous Deployment](#continuous-deployment) for all tagged releases.
 
 **Note:** These packages are pure Python and compatible with all operating systems.

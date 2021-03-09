@@ -19,19 +19,10 @@ class Config(TypedDict, total=False):
 
     Allowed value: Valid OS file path.
 
-    == google_drive_operations_path ==
-
-    Description: Relative path to the directory containing `rds_operations_cmf_paths`, relative to
-                `google_drive_base_path`.
-
-    Default value: Hardcoded to conventional location.
-
-    Allowed value: Valid OS file path.
-
     == rds_operations_cmf_paths ==
 
     Description: Relative paths to Crash Move Folders for each operation to be reported on by this application,
-                 relative to `google_drive_operations_path`.
+                 relative to `google_drive_base_path`.
 
     Default value: Varies based on current reporting needs.
 
@@ -138,18 +129,16 @@ config["google_drive_base_path"] = Path(
     )
 )
 
-config["google_drive_operations_path"] = config["google_drive_base_path"].joinpath(
-    os.getenv(
-        "APP_RDS_DASHBOARD_GOOGLE_DRIVE_OPERATIONS_PATH",
-        default="Shared drives/country-responses",
-    )
-)
-
 config["rds_operations_cmf_paths"] = [
-    Path("2021-dom-001"),
-    Path("2021-bgd-001"),
-    Path("2021-moz-001"),
-    Path("rolling-data-scramble-south-sudan/2020ssd001"),
+    Path("Shared drives/prepared-country-data/bangladesh"),
+    Path("Shared drives/prepared-country-data/cameroon"),
+    Path("Shared drives/prepared-country-data/dominican-republic"),
+    Path("Shared drives/prepared-country-data/honduras"),
+    Path("Shared drives/prepared-country-data/indonesia"),
+    Path("Shared drives/prepared-country-data/myanmar"),
+    Path("Shared drives/prepared-country-data/south-sudan"),
+    Path("Shared drives/country-responses/2021-hti-001"),
+    Path("Shared drives/country-responses/2021-moz-001"),
 ]
 
 config["all_products_product_id"] = os.getenv(
