@@ -130,10 +130,15 @@ config["google_drive_base_path"] = Path(
 )
 
 config["rds_operations_cmf_paths"] = [
-    Path("2021-dom-001"),
-    Path("2021-bgd-001"),
-    Path("2021-moz-001"),
-    Path("rolling-data-scramble-south-sudan/2020ssd001"),
+    Path("Shared drives/prepared-country-data/bangladesh"),
+    Path("Shared drives/prepared-country-data/cameroon"),
+    Path("Shared drives/prepared-country-data/dominican-republic"),
+    Path("Shared drives/prepared-country-data/honduras"),
+    Path("Shared drives/prepared-country-data/indonesia"),
+    Path("Shared drives/prepared-country-data/myanmar"),
+    Path("Shared drives/prepared-country-data/south-sudan"),
+    Path("Shared drives/country-responses/2021-hti-001"),
+    Path("Shared drives/country-responses/2021-moz-001"),
 ]
 
 config["all_products_product_id"] = os.getenv(
