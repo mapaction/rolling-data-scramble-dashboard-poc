@@ -19,19 +19,10 @@ class Config(TypedDict, total=False):
 
     Allowed value: Valid OS file path.
 
-    == google_drive_operations_path ==
-
-    Description: Relative path to the directory containing `rds_operations_cmf_paths`, relative to
-                `google_drive_base_path`.
-
-    Default value: Hardcoded to conventional location.
-
-    Allowed value: Valid OS file path.
-
     == rds_operations_cmf_paths ==
 
     Description: Relative paths to Crash Move Folders for each operation to be reported on by this application,
-                 relative to `google_drive_operations_path`.
+                 relative to `google_drive_base_path`.
 
     Default value: Varies based on current reporting needs.
 
@@ -135,13 +126,6 @@ config: Config = dict()
 config["google_drive_base_path"] = Path(
     os.getenv(
         "APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH", default=google_drive_base_path()
-    )
-)
-
-config["google_drive_operations_path"] = config["google_drive_base_path"].joinpath(
-    os.getenv(
-        "APP_RDS_DASHBOARD_GOOGLE_DRIVE_OPERATIONS_PATH",
-        default="Shared drives/country-responses",
     )
 )
 

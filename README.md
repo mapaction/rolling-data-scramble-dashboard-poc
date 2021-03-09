@@ -89,10 +89,10 @@ provided in this dictionary's description.
 These default values can optionally be overridden using environment variables in the form:
 `APP_RDS_DASHBOARD_{CONFIG-OPTION}`.
 
-For example to override the `google_drive_base_path` config option to `/Foo`, set an environment variable:
+For example to override the `all_products_product_id` config option to `MA1234`, set an environment variable:
 
 ```
-APP_RDS_DASHBOARD_GOOGLE_DRIVE_BASE_PATH=/foo
+APP_RDS_DASHBOARD_ALL_PRODUCTS_ID=MA1234
 ```
 
 **Note:** The `rds_operations_cmf_paths` config option cannot be overridden this way.
