@@ -371,7 +371,7 @@ class Operation:
         :return: layers used in MapChef automation
         """
         layers: List[MapLayer] = []
-        layer_definitions: List[Dict[str, Any]] = list()
+        layer_definitions: List[Dict[str, Any]]
         with open(self.layer_properties_path, mode="r") as layers_properties_file:
             layers_properties_data: Dict[str, List[Dict[str, Any]]]
             layers_properties_data = json.load(fp=layers_properties_file)
