@@ -26,15 +26,15 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "attrs"
 version = "20.3.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "furo", "sphinx", "pre-commit"]
 docs = ["furo", "sphinx", "zope.interface"]
 tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "furo", "sphinx", "pre-commit"]
 
 [[package]]
 name = "bandit"
@@ -45,11 +45,11 @@ optional = false
 python-versions = ">=3.5"
 
 [package.dependencies]
-colorama = {version = ">=0.3.9", markers = "platform_system == \"Windows\""}
-GitPython = ">=1.0.1"
+stevedore = ">=1.20.0"
 PyYAML = ">=5.3.1"
 six = ">=1.10.0"
-stevedore = ">=1.20.0"
+colorama = {version = ">=0.3.9", markers = "platform_system == \"Windows\""}
+GitPython = ">=1.0.1"
 
 [[package]]
 name = "black"
@@ -60,14 +60,14 @@ optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-appdirs = "*"
-click = ">=7.1.2"
-mypy-extensions = ">=0.4.3"
-pathspec = ">=0.6,<1"
 regex = ">=2020.1.8"
-toml = ">=0.10.1"
+mypy-extensions = ">=0.4.3"
 typed-ast = ">=1.4.0"
+toml = ">=0.10.1"
 typing-extensions = ">=3.7.4"
+pathspec = ">=0.6,<1"
+click = ">=7.1.2"
+appdirs = "*"
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -145,10 +145,10 @@ python-versions = "*"
 
 [package.dependencies]
 argparse = ">=1.3.0"
-google-api-python-client = "1.6.7"
-gspread = ">=2.1.1"
-oauth2client = ">=1.5.0,<5.0.0dev"
 pandas = "*"
+oauth2client = ">=1.5.0,<5.0.0dev"
+gspread = ">=2.1.1"
+google-api-python-client = "1.6.7"
 
 [package.extras]
 tests = ["pytest (==2.7.2)"]
@@ -192,8 +192,8 @@ optional = false
 python-versions = ">=3.6.1,<4.0.0"
 
 [package.dependencies]
-flake8 = ">=3.7,<3.9"
 typed-ast = {version = ">=1.4,<2.0", markers = "python_version < \"3.8\""}
+flake8 = ">=3.7,<3.9"
 
 [[package]]
 name = "flake8-bandit"
@@ -205,9 +205,9 @@ python-versions = "*"
 
 [package.dependencies]
 bandit = "*"
-flake8 = "*"
 flake8-polyfill = "*"
 pycodestyle = "*"
+flake8 = "*"
 
 [[package]]
 name = "flake8-black"
@@ -245,8 +245,8 @@ optional = false
 python-versions = "*"
 
 [package.dependencies]
-flake8 = ">=3"
 pydocstyle = ">=2.1"
+flake8 = ">=3"
 
 [[package]]
 name = "flake8-import-order"
@@ -301,9 +301,9 @@ optional = false
 python-versions = "*"
 
 [package.dependencies]
-httplib2 = ">=0.9.2,<1dev"
-oauth2client = ">=1.5.0,<5.0.0dev"
 six = ">=1.6.1,<2dev"
+oauth2client = ">=1.5.0,<5.0.0dev"
+httplib2 = ">=0.9.2,<1dev"
 uritemplate = ">=3.0.0,<4dev"
 
 [[package]]
@@ -315,14 +315,14 @@ optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 
 [package.dependencies]
-cachetools = ">=2.0.0,<5.0"
-pyasn1-modules = ">=0.2.1"
-rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
 six = ">=1.9.0"
+pyasn1-modules = ">=0.2.1"
+cachetools = ">=2.0.0,<5.0"
+rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
 
 [package.extras]
-aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
+aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)"]
 
 [[package]]
 name = "google-auth-oauthlib"
@@ -333,8 +333,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-google-auth = ">=1.0.0"
 requests-oauthlib = ">=0.7.0"
+google-auth = ">=1.0.0"
 
 [package.extras]
 tool = ["click (>=6.0.0)"]
@@ -348,8 +348,8 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
-google-auth = ">=1.12.0"
 google-auth-oauthlib = ">=0.4.1"
+google-auth = ">=1.12.0"
 
 [[package]]
 name = "httplib2"
@@ -387,12 +387,45 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
+name = "importlib-resources"
+version = "5.1.2"
+description = "Read resources from Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+zipp = {version = ">=0.4", markers = "python_version < \"3.8\""}
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[[package]]
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "jsonschema"
+version = "3.2.0"
+description = "An implementation of JSON Schema validation for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
+pyrsistent = ">=0.14.0"
+six = ">=1.11.0"
+attrs = ">=17.4.0"
+
+[package.extras]
+format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator (>0.1.0)", "rfc3339-validator"]
+format = ["idna", "jsonpointer (>1.13)", "rfc3987", "strict-rfc3339", "webcolors"]
 
 [[package]]
 name = "mccabe"
@@ -443,11 +476,11 @@ optional = false
 python-versions = "*"
 
 [package.dependencies]
-httplib2 = ">=0.9.1"
-pyasn1 = ">=0.1.7"
 pyasn1-modules = ">=0.0.5"
-rsa = ">=3.1.4"
 six = ">=1.6.1"
+pyasn1 = ">=0.1.7"
+httplib2 = ">=0.9.1"
+rsa = ">=3.1.4"
 
 [[package]]
 name = "oauthlib"
@@ -458,9 +491,9 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
-rsa = ["cryptography"]
 signals = ["blinker"]
 signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
+rsa = ["cryptography"]
 
 [[package]]
 name = "packaging"
@@ -482,9 +515,9 @@ optional = false
 python-versions = ">=3.7.1"
 
 [package.dependencies]
-numpy = ">=1.16.5"
 python-dateutil = ">=2.7.3"
 pytz = ">=2017.3"
+numpy = ">=1.16.5"
 
 [package.extras]
 test = ["pytest (>=5.0.1)", "pytest-xdist", "hypothesis (>=3.58)"]
@@ -590,6 +623,14 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "pyrsistent"
+version = "0.17.3"
+description = "Persistent/Functional/Immutable data structures"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "pytest"
 version = "6.2.2"
 description = "pytest: simple powerful testing with Python"
@@ -598,15 +639,15 @@ optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
-attrs = ">=19.2.0"
-colorama = {version = "*", markers = "sys_platform == \"win32\""}
-importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
-iniconfig = "*"
 packaging = "*"
-pluggy = ">=0.12,<1.0.0a1"
 py = ">=1.8.2"
+iniconfig = "*"
+importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+attrs = ">=19.2.0"
 toml = "*"
+pluggy = ">=0.12,<1.0.0a1"
+atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
@@ -620,8 +661,8 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
-coverage = ">=5.2.1"
 pytest = ">=4.6"
+coverage = ">=5.2.1"
 
 [package.extras]
 testing = ["fields", "hunter", "process-tests (==2.0.2)", "six", "pytest-xdist", "virtualenv"]
@@ -670,9 +711,9 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
+idna = ">=2.5,<3"
 certifi = ">=2017.4.17"
 chardet = ">=3.0.2,<5"
-idna = ">=2.5,<3"
 urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
@@ -714,10 +755,10 @@ optional = false
 python-versions = ">=3.5"
 
 [package.dependencies]
-Click = ">=6.0"
-dparse = ">=0.5.1"
 packaging = "*"
 requests = "*"
+Click = ">=6.0"
+dparse = ">=0.5.1"
 
 [[package]]
 name = "six"
@@ -756,6 +797,14 @@ importlib-metadata = {version = ">=1.7.0", markers = "python_version < \"3.8\""}
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 
 [[package]]
+name = "strict-rfc3339"
+version = "0.7"
+description = "Strict, simple, lightweight RFC3339 functions"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -780,8 +829,8 @@ optional = false
 python-versions = ">=3.5.3"
 
 [package.extras]
-doc = ["sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
 test = ["pytest", "typing-extensions", "mypy"]
+doc = ["sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
 
 [[package]]
 name = "typing-extensions"
@@ -827,7 +876,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "2238c025a515ee795b0ea49a5e56c84bd50f1334355ed5e74d27a6b2bf5b6bca"
+content-hash = "2c479542620787f178846d08f0528ba18e21a3a11aa5355cac2dd7dc8d468bb3"
 
 [metadata.files]
 appdirs = [
@@ -1001,9 +1050,17 @@ importlib-metadata = [
     {file = "importlib_metadata-3.7.2-py3-none-any.whl", hash = "sha256:407d13f55dc6f2a844e62325d18ad7019a436c4bfcaee34cda35f2be6e7c3e34"},
     {file = "importlib_metadata-3.7.2.tar.gz", hash = "sha256:18d5ff601069f98d5d605b6a4b50c18a34811d655c55548adc833e687289acde"},
 ]
+importlib-resources = [
+    {file = "importlib_resources-5.1.2-py3-none-any.whl", hash = "sha256:ebab3efe74d83b04d6bf5cd9a17f0c5c93e60fb60f30c90f56265fce4682a469"},
+    {file = "importlib_resources-5.1.2.tar.gz", hash = "sha256:642586fc4740bd1cad7690f836b3321309402b20b332529f25617ff18e8e1370"},
+]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
+]
+jsonschema = [
+    {file = "jsonschema-3.2.0-py2.py3-none-any.whl", hash = "sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163"},
+    {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
@@ -1158,6 +1215,9 @@ pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
+pyrsistent = [
+    {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},
+]
 pytest = [
     {file = "pytest-6.2.2-py3-none-any.whl", hash = "sha256:b574b57423e818210672e07ca1fa90aaf194a4f63f3ab909a2c67ebb22913839"},
     {file = "pytest-6.2.2.tar.gz", hash = "sha256:9d1edf9e7d0b84d72ea3dbcdfd22b35fb543a5e8f2a60092dd578936bf63d7f9"},
@@ -1272,6 +1332,9 @@ snowballstemmer = [
 stevedore = [
     {file = "stevedore-3.3.0-py3-none-any.whl", hash = "sha256:50d7b78fbaf0d04cd62411188fa7eedcb03eb7f4c4b37005615ceebe582aa82a"},
     {file = "stevedore-3.3.0.tar.gz", hash = "sha256:3a5bbd0652bf552748871eaa73a4a8dc2899786bc497a2aa1fcb4dcdb0debeee"},
+]
+strict-rfc3339 = [
+    {file = "strict-rfc3339-0.7.tar.gz", hash = "sha256:5cad17bedfc3af57b399db0fed32771f18fc54bbd917e85546088607ac5e1277"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
