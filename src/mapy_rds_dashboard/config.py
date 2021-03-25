@@ -180,7 +180,7 @@ config["google_service_credential_scopes"] = str(
 
 config["google_sheets_key"] = os.getenv(
     "APP_RDS_DASHBOARD_GOOGLE_SHEETS_KEY",
-    default="1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8",
+    default="1UNvKDvhWxpPlEtYlSVtFy1QyTY0Ha07yThJ_bMXhzIM",
 )
 
 config["google_sheets_summary_sheet_name"] = os.getenv(
