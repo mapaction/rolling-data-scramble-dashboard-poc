@@ -109,7 +109,7 @@ def google_drive_base_path() -> Path:
     :raises FileNotFoundError: path to the root of the Google Drive does not exist
     :return: path to the root of the Google Drive
     """
-    google_drive_base_path_windows = Path("G:")
+    google_drive_base_path_windows = Path("G:/")
     google_drive_base_path_macos = Path("/Volumes/GoogleDrive")
 
     if google_drive_base_path_windows.exists():

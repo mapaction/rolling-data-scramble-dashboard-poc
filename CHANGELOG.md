@@ -11,14 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * [#30] JSON Schema for export format
 
+### Fixed
+
+* [#88] Default Google Drive root for Windows
+* [#82] Removed hard-coded `country-responses` CMF path to support operations in `prepared-country-data`
+
 ### Changed
 
 * [#41] Google Spreadsheet changed to new spreadsheet and authentication identity 
 * [#81] Updating project dependencies
-
-### Fixed
-
-* [#82] Removed hard-coded `country-responses` CMF path to support operations in `prepared-country-data`
 
 ## [0.3.0] - 2021-03-08
 
