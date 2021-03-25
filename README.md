@@ -109,7 +109,8 @@ results, grouped by operation, by layer, or by result, etc.) a common export for
 
 This format forms a stable interface between how data/results are generated, and how/where these results are visualised.
 
-In brief, this format is a Python dict that can be easily serialised (e.g. to JSON). It has two top level members:
+This format is formally described by a JSON Schema, available from within the application Python Package, however in
+brief, it consists of an object with two members:
 
 1. `data`, which contains information about:
     * affected countries from each operation
@@ -128,6 +129,10 @@ In brief, this format is a Python dict that can be easily serialised (e.g. to JS
 
 The structure and keys used in this export format are guaranteed to stay the same within each version. Any new versions
 will include a deprecation policy for removing older versions.
+
+Current export format version: **1**
+
+Current JSON Schema: [export_format_v1_schema.json](src/mapy_rds_dashboard/export_format_v1_schema.json)
 
 Version 1 is the current export format version.
 

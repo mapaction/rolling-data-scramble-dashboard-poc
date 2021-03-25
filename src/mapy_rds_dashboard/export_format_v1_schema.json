@@ -1,0 +1,794 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"$id": "http://ns.mapaction.org/rds-dashboard/export-format-v1.json",
+	"type": "object",
+	"title": "MapAction Rolling Data Scramble (RDS) Dashboard, Export Format version 1",
+	"description": "Schema describing version 1 of the export format used in the Rolling Data Scramble dashboard.",
+	"defs": {
+		"layer_id": {
+			"$id": "#/defs/layer_id",
+			"type": "string",
+			"title": "Layer ID",
+			"description": "Layer identifier for result.",
+			"examples": [
+				"locationmap-admn-ad0-ln-s0-locationmaps"
+			]
+		},
+		"operation_id": {
+			"$id": "#/defs/operation_id",
+			"type": "string",
+			"title": "Operation ID",
+			"description": "Operation identifier for result.",
+			"examples": [
+				"bgd"
+			]
+		},
+		"result": {
+			"$id": "#/defs/result",
+			"type": "string",
+			"title": "Result",
+			"description": "Result associated with an evaluation of a layer against it's layer definition schema.",
+			"enum": [
+				"ERROR",
+				"FAIL",
+				"NOT_EVALUATED",
+				"PASS",
+				"PASS_WITH_WARNINGS"
+			],
+			"examples": [
+				"PASS"
+			]
+		}
+	},
+	"examples": [{
+		"data": {
+			"countries": {
+				"BGD": "Bangladesh"
+			},
+			"operations": [{
+				"affected_country_iso3": "BGD",
+				"affected_country_name": "Bangladesh",
+				"id": "bgd",
+				"name": "Bangladesh Rolling Data Scramble"
+			}],
+			"operations_by_id": {
+				"bgd": {
+					"affected_country_iso3": "BGD",
+					"affected_country_name": "Bangladesh",
+					"id": "bgd",
+					"name": "Bangladesh Rolling Data Scramble"
+				}
+			},
+			"results_by_layer": {
+				"locationmap-admn-ad0-ln-s0-locationmaps": {
+					"bgd": "PASS"
+				}
+			},
+			"results_by_operation": {
+				"bgd": {
+					"locationmap-admn-ad0-ln-s0-locationmaps": "PASS"
+				}
+			},
+			"results_by_result": {
+				"ERROR": [],
+				"FAIL": [],
+				"NOT_EVALUATED": [],
+				"PASS": [{
+					"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+					"operation_id": "bgd"
+				}],
+				"PASS_WITH_WARNINGS": []
+			},
+			"summary_statistics": {
+				"aggregated_layer_results_by_operation": {
+					"bgd": {
+						"admn": "PASS",
+						"carto": "PASS",
+						"elev": "PASS",
+						"phys": "PASS",
+						"stle": "PASS",
+						"tran": "PASS"
+					}
+				},
+				"totals_by_result": {
+					"ERROR": 0,
+					"FAIL": 100,
+					"NOT_EVALUATED": 0,
+					"PASS": 200,
+					"PASS_WITH_WARNINGS": 10
+				},
+				"totals_by_result_by_operation": {
+					"bgd": {
+						"ERROR": 0,
+						"FAIL": 0,
+						"NOT_EVALUATED": 0,
+						"PASS": 27,
+						"PASS_WITH_WARNINGS": 0
+					}
+				}
+			},
+			"ungrouped_results": [{
+				"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+				"operation_id": "bgd",
+				"result": "PASS"
+			}]
+		},
+		"meta": {
+			"app_version": "0.3.0",
+			"display_labels": {
+				"layer_aggregation_categories": {
+					"admn": "Admin",
+					"carto": "Cartographic",
+					"elev": "Elevation",
+					"phys": "Physical features",
+					"stle": "Settlements",
+					"tran": "Transport"
+				},
+				"result_types": {
+					"ERROR": "Error",
+					"FAIL": "Fail",
+					"NOT_EVALUATED": "Not Evaluated",
+					"PASS": "Pass",
+					"PASS_WITH_WARNINGS": "Warning"
+				}
+			},
+			"export_datetime": "2021-03-20T13:38:29.602",
+			"export_version": 1
+		}
+	}],
+	"required": [
+		"data",
+		"meta"
+	],
+	"properties": {
+		"data": {
+			"$id": "#/properties/data",
+			"type": "object",
+			"title": "Data elements",
+			"description": "Data on operations, countries, results and summary statistics.",
+			"examples": [{
+				"countries": {
+					"BGD": "Bangladesh"
+				},
+				"operations": [{
+					"affected_country_iso3": "BGD",
+					"affected_country_name": "Bangladesh",
+					"id": "bgd",
+					"name": "Bangladesh Rolling Data Scramble"
+				}],
+				"operations_by_id": {
+					"bgd": {
+						"affected_country_iso3": "BGD",
+						"affected_country_name": "Bangladesh",
+						"id": "bgd",
+						"name": "Bangladesh Rolling Data Scramble"
+					}
+				},
+				"results_by_layer": {
+					"locationmap-admn-ad0-ln-s0-locationmaps": {
+						"bgd": "PASS"
+					}
+				},
+				"results_by_operation": {
+					"bgd": {
+						"locationmap-admn-ad0-ln-s0-locationmaps": "PASS"
+					}
+				},
+				"results_by_result": {
+					"ERROR": [],
+					"FAIL": [],
+					"NOT_EVALUATED": [],
+					"PASS": [{
+						"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+						"operation_id": "bgd"
+					}],
+					"PASS_WITH_WARNINGS": []
+				},
+				"summary_statistics": {
+					"aggregated_layer_results_by_operation": {
+						"bgd": {
+							"admn": "PASS",
+							"carto": "PASS",
+							"elev": "PASS",
+							"phys": "PASS",
+							"stle": "PASS",
+							"tran": "PASS"
+						}
+					},
+					"totals_by_result": {
+						"ERROR": 0,
+						"FAIL": 100,
+						"NOT_EVALUATED": 0,
+						"PASS": 200,
+						"PASS_WITH_WARNINGS": 10
+					},
+					"totals_by_result_by_operation": {
+						"bgd": {
+							"ERROR": 0,
+							"FAIL": 0,
+							"NOT_EVALUATED": 0,
+							"PASS": 27,
+							"PASS_WITH_WARNINGS": 0
+						}
+					}
+				},
+				"ungrouped_results": [{
+					"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+					"operation_id": "bgd",
+					"result": "PASS"
+				}]
+			}],
+			"required": [
+				"countries",
+				"operations",
+				"operations_by_id",
+				"results_by_layer",
+				"results_by_operation",
+				"results_by_result",
+				"summary_statistics",
+				"ungrouped_results"
+			],
+			"properties": {
+				"countries": {
+					"$id": "#/properties/data/properties/countries",
+					"type": "object",
+					"title": "Countries",
+					"description": "Lookup list of ISO Alpha-3 country names to well-known names.",
+					"examples": [{
+						"BGD": "Bangladesh"
+					}],
+					"patternProperties": {
+						".*": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": true
+				},
+				"operations": {
+					"$id": "#/properties/data/properties/operations",
+					"type": "array",
+					"title": "Operations",
+					"description": "List of operations contained in the export.",
+					"examples": [
+						[{
+							"affected_country_iso3": "BGD",
+							"affected_country_name": "Bangladesh",
+							"id": "bgd",
+							"name": "Bangladesh Rolling Data Scramble"
+						}]
+					],
+					"additionalItems": false,
+					"items": {
+						"$id": "#/properties/data/properties/operations/items",
+						"type": "object",
+						"title": "Operation details",
+						"description": "Details about an operation.",
+						"examples": [{
+							"affected_country_iso3": "BGD",
+							"affected_country_name": "Bangladesh",
+							"id": "bgd",
+							"name": "Bangladesh Rolling Data Scramble"
+						}],
+						"required": [
+							"affected_country_iso3",
+							"affected_country_name",
+							"id",
+							"name"
+						],
+						"properties": {
+							"affected_country_iso3": {
+								"$id": "#/properties/data/properties/operations/items/properties/affected_country_iso3",
+								"type": "string",
+								"title": "Affected Country ISO Alpha-3 Code",
+								"description": "ISO Alpha-3 code for the country associated with the operation.",
+								"examples": [
+									"BGD"
+								]
+							},
+							"affected_country_name": {
+								"$id": "#/properties/data/properties/operations/items/properties/affected_country_name",
+								"type": "string",
+								"title": "Affected Country Name",
+								"description": "Well-known name for the country associated with the operation.",
+								"examples": [
+									"Bangladesh"
+								]
+							},
+							"id": {
+								"$id": "#/properties/data/properties/operations/items/properties/id",
+								"type": "string",
+								"title": "Operation ID",
+								"description": "MapAction identifier for operation.",
+								"examples": [
+									"bgd"
+								]
+							},
+							"name": {
+								"$id": "#/properties/data/properties/operations/items/properties/name",
+								"type": "string",
+								"title": "Operation Name",
+								"description": "Name of operation.",
+								"examples": [
+									"Bangladesh Rolling Data Scramble"
+								]
+							}
+						},
+						"additionalProperties": false
+					}
+				},
+				"operations_by_id": {
+					"$id": "#/properties/data/properties/operations_by_id",
+					"type": "object",
+					"title": "Operations (By ID)",
+					"description": "Hash of operations keyed by their operation ID.",
+					"examples": [{
+						"bgd": {
+							"affected_country_iso3": "BGD",
+							"affected_country_name": "Bangladesh",
+							"id": "bgd",
+							"name": "Bangladesh Rolling Data Scramble"
+						}
+					}],
+					"patternProperties": {
+						".*": {
+							"$ref": "#/properties/data/properties/operations/items"
+						}
+					},
+					"additionalProperties": true
+				},
+				"results_by_layer": {
+					"$id": "#/properties/data/properties/results_by_layer",
+					"type": "object",
+					"title": "Results (By Layer)",
+					"description": "Hash of results keyed by their layer ID.",
+					"examples": [{
+						"locationmap-admn-ad0-ln-s0-locationmaps": {
+							"bgd": "PASS"
+						}
+					}],
+					"patternProperties": {
+						".*": {
+							"$id": "#/properties/data/properties/results_by_layer/properties/result_by_layer",
+							"type": "object",
+							"title": "Result (By Layer)",
+							"description": "Result for each operation for a given layer.",
+							"default": {},
+							"examples": [{
+								"bgd": "PASS"
+							}],
+							"patternProperties": {
+								".*": {
+									"$ref": "#/defs/result"
+								}
+							},
+							"additionalProperties": true
+						}
+					},
+					"additionalProperties": true
+				},
+				"results_by_operation": {
+					"$id": "#/properties/data/properties/results_by_operation",
+					"type": "object",
+					"title": "Results (By Operation)",
+					"description": "Hash of results keyed by their operation ID.",
+					"examples": [{
+						"bgd": {
+							"locationmap-admn-ad0-ln-s0-locationmaps": "PASS"
+						}
+					}],
+					"patternProperties": {
+						".*": {
+							"$id": "#/properties/data/properties/results_by_operation/properties/result_by_operation",
+							"type": "object",
+							"title": "Result (By Operation)",
+							"description": "Result for each layer for a given operation.",
+							"default": {},
+							"examples": [{
+								"locationmap-admn-ad0-ln-s0-locationmaps": "PASS"
+							}],
+							"patternProperties": {
+								".*": {
+									"$ref": "#/defs/result"
+								}
+							},
+							"additionalProperties": true
+						}
+					},
+					"additionalProperties": true
+				},
+				"results_by_result": {
+					"$id": "#/properties/data/properties/results_by_result",
+					"type": "object",
+					"title": "Results (By Result Type)",
+					"description": "Hash of results keyed by their result type.",
+					"examples": [{
+						"ERROR": [],
+						"FAIL": [],
+						"NOT_EVALUATED": [],
+						"PASS": [{
+							"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+							"operation_id": "bgd"
+						}],
+						"PASS_WITH_WARNINGS": []
+					}],
+					"required": [
+						"ERROR",
+						"FAIL",
+						"NOT_EVALUATED",
+						"PASS",
+						"PASS_WITH_WARNINGS"
+					],
+					"patternProperties": {
+						".*": {
+							"$id": "#/properties/data/properties/results_by_result/properties/results_by_result_type",
+							"type": "array",
+							"title": "Results (For Result Type)",
+							"description": "Results for each operation/layer for a given result type.",
+							"examples": [
+								[{
+									"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+									"operation_id": "bgd"
+								}]
+							],
+							"items": {
+								"$id": "#/properties/data/properties/results_by_result/properties/results_by_result_type/items",
+								"type": "object",
+								"title": "Result (for Result Type)",
+								"description": "Result for a given result type.",
+								"examples": [{
+									"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+									"operation_id": "bgd"
+								}],
+								"required": [
+									"layer_id",
+									"operation_id"
+								],
+								"properties": {
+									"layer_id": {
+										"$ref": "#/defs/layer_id"
+									},
+									"operation_id": {
+										"$ref": "#/defs/operation_id"
+									}
+								},
+								"additionalProperties": false
+							}
+						}
+					},
+					"additionalProperties": false
+				},
+				"summary_statistics": {
+					"$id": "#/properties/data/properties/summary_statistics",
+					"type": "object",
+					"title": "Summary Statistics",
+					"description": "Summarised statistics for results.",
+					"examples": [{
+						"aggregated_layer_results_by_operation": {
+							"bgd": {
+								"admn": "PASS",
+								"carto": "PASS",
+								"elev": "PASS",
+								"phys": "PASS",
+								"stle": "PASS",
+								"tran": "PASS"
+							}
+						},
+						"totals_by_result": {
+							"ERROR": 0,
+							"FAIL": 100,
+							"NOT_EVALUATED": 0,
+							"PASS": 200,
+							"PASS_WITH_WARNINGS": 10
+						},
+						"totals_by_result_by_operation": {
+							"bgd": {
+								"ERROR": 0,
+								"FAIL": 0,
+								"NOT_EVALUATED": 0,
+								"PASS": 27,
+								"PASS_WITH_WARNINGS": 0
+							}
+						}
+					}],
+					"required": [
+						"aggregated_layer_results_by_operation",
+						"totals_by_result",
+						"totals_by_result_by_operation"
+					],
+					"properties": {
+						"aggregated_layer_results_by_operation": {
+							"$id": "#/properties/data/properties/summary_statistics/properties/aggregated_layer_results_by_operation",
+							"type": "object",
+							"title": "Aggregated Layer Results (By Operation)",
+							"description": "Hash of results aggregated by layer type, keyed by their operation ID.",
+							"examples": [{
+								"bgd": {
+									"admn": "PASS",
+									"carto": "PASS",
+									"elev": "PASS",
+									"phys": "PASS",
+									"stle": "PASS",
+									"tran": "PASS"
+								}
+							}],
+							"patternProperties": {
+								".*": {
+									"$id": "#/properties/data/properties/summary_statistics/properties/aggregated_layer_results_by_operation/properties/aggregated_layer_result_for_country",
+									"type": "object",
+									"title": "Aggregated Layer Results (For Operation)",
+									"description": "Aggregated layer results for a given operation.",
+									"examples": [{
+										"admn": "PASS",
+										"carto": "PASS",
+										"elev": "PASS",
+										"phys": "PASS",
+										"stle": "PASS",
+										"tran": "PASS"
+									}],
+									"patternProperties": {
+										".*": {
+											"$ref": "#/defs/result"
+										}
+									},
+									"additionalProperties": true
+								}
+							},
+							"additionalProperties": true
+						},
+						"totals_by_result": {
+							"$id": "#/properties/data/properties/summary_statistics/properties/totals_by_result",
+							"type": "object",
+							"title": "Result totals (By Result Type)",
+							"description": "Sum of each result type across all layers/operations.",
+							"examples": [{
+								"ERROR": 0,
+								"FAIL": 100,
+								"NOT_EVALUATED": 0,
+								"PASS": 200,
+								"PASS_WITH_WARNINGS": 10
+							}],
+							"required": [
+								"ERROR",
+								"FAIL",
+								"NOT_EVALUATED",
+								"PASS",
+								"PASS_WITH_WARNINGS"
+							],
+							"patternProperties": {
+								".*": {
+									"$id": "#/properties/data/properties/summary_statistics/properties/totals_by_result/total_by_result_type",
+									"type": "integer"
+								}
+							},
+							"additionalProperties": false
+						},
+						"totals_by_result_by_operation": {
+							"$id": "#/properties/data/properties/summary_statistics/properties/totals_by_result_by_operation",
+							"type": "object",
+							"title": "Result totals (By Operation)",
+							"description": "Sum of each result type across all layers in each operation.",
+							"examples": [{
+								"bgd": {
+									"ERROR": 0,
+									"FAIL": 0,
+									"NOT_EVALUATED": 0,
+									"PASS": 27,
+									"PASS_WITH_WARNINGS": 0
+								}
+							}],
+							"patternProperties": {
+								".*": {
+									"$id": "#/properties/data/properties/summary_statistics/properties/totals_by_result_by_operation/totals_by_result_for_operation",
+									"type": "object",
+									"title": "Result totals (For Operation)",
+									"description": "Sum of each result type across all layers for an operation.",
+									"examples": [{
+										"ERROR": 0,
+										"FAIL": 0,
+										"NOT_EVALUATED": 0,
+										"PASS": 27,
+										"PASS_WITH_WARNINGS": 0
+									}],
+									"required": [
+										"ERROR",
+										"FAIL",
+										"NOT_EVALUATED",
+										"PASS",
+										"PASS_WITH_WARNINGS"
+									],
+									"patternProperties": {
+										".*": {
+											"$id": "#/properties/data/properties/summary_statistics/properties/totals_by_result_by_operation/totals_by_result_for_operation/total_for_result_type",
+											"type": "integer"
+										}
+									}
+								}
+							},
+							"additionalProperties": true
+						}
+					},
+					"additionalProperties": false
+				},
+				"ungrouped_results": {
+					"$id": "#/properties/data/properties/ungrouped_results",
+					"type": "array",
+					"title": "Ungrouped results",
+					"description": "Raw ungrouped result objects containing layer, operation and result type.",
+					"examples": [
+						[{
+							"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+							"operation_id": "bgd",
+							"result": "PASS"
+						}]
+					],
+					"additionalItems": true,
+					"items": {
+						"$id": "#/properties/data/properties/ungrouped_results/items",
+						"type": "object",
+						"title": "Ungrouped result",
+						"description": "Raw result object containing layer, operation and result type.",
+						"examples": [{
+							"layer_id": "locationmap-admn-ad0-ln-s0-locationmaps",
+							"operation_id": "bgd",
+							"result": "PASS"
+						}],
+						"required": [
+							"layer_id",
+							"operation_id",
+							"result"
+						],
+						"properties": {
+							"layer_id": {
+								"$ref": "#/defs/layer_id"
+							},
+							"operation_id": {
+								"$ref": "#/defs/operation_id"
+							},
+							"result": {
+								"ref": "#/defs/result"
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			},
+			"additionalProperties": false
+		},
+		"meta": {
+			"$id": "#/properties/meta",
+			"type": "object",
+			"title": "Meta elements",
+			"description": "Information about export data, inc. when it was generated, format version and lookup lists for formatting data values.",
+			"examples": [{
+				"app_version": "0.3.0",
+				"display_labels": {
+					"layer_aggregation_categories": {
+						"admn": "Admin",
+						"carto": "Cartographic",
+						"elev": "Elevation",
+						"phys": "Physical features",
+						"stle": "Settlements",
+						"tran": "Transport"
+					},
+					"result_types": {
+						"ERROR": "Error",
+						"FAIL": "Fail",
+						"NOT_EVALUATED": "Not Evaluated",
+						"PASS": "Pass",
+						"PASS_WITH_WARNINGS": "Warning"
+					}
+				},
+				"export_datetime": "2021-03-20T13:38:29.602",
+				"export_version": 1
+			}],
+			"required": [
+				"app_version",
+				"display_labels",
+				"export_datetime",
+				"export_version"
+			],
+			"properties": {
+				"app_version": {
+					"$id": "#/properties/meta/properties/app_version",
+					"type": "string",
+					"title": "Application Version",
+					"description": "Version of the `mapy_rds_dashboard` used to generate export.",
+					"examples": [
+						"0.3.0"
+					]
+				},
+				"display_labels": {
+					"$id": "#/properties/meta/properties/display_labels",
+					"type": "object",
+					"title": "Display Labels",
+					"description": "Lookup lists that can be used to format some data property values.",
+					"examples": [{
+						"layer_aggregation_categories": {
+							"admn": "Admin",
+							"carto": "Cartographic",
+							"elev": "Elevation",
+							"phys": "Physical features",
+							"stle": "Settlements",
+							"tran": "Transport"
+						},
+						"result_types": {
+							"ERROR": "Error",
+							"FAIL": "Fail",
+							"NOT_EVALUATED": "Not Evaluated",
+							"PASS": "Pass",
+							"PASS_WITH_WARNINGS": "Warning"
+						}
+					}],
+					"required": [
+						"layer_aggregation_categories",
+						"result_types"
+					],
+					"properties": {
+						"layer_aggregation_categories": {
+							"$id": "#/properties/meta/properties/display_labels/properties/layer_aggregation_categories",
+							"type": "object",
+							"title": "Layer Aggregation Category Display Labels",
+							"description": "Lookup list of formatted display labels to use with layer aggregation category codes.",
+							"examples": [{
+								"admn": "Admin",
+								"carto": "Cartographic",
+								"elev": "Elevation",
+								"phys": "Physical features",
+								"stle": "Settlements",
+								"tran": "Transport"
+							}],
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": true
+						},
+						"result_types": {
+							"$id": "#/properties/meta/properties/display_labels/properties/result_types",
+							"type": "object",
+							"title": "Result Type Display Labels",
+							"description": "Lookup list of formatted display labels to use with result codes.",
+							"examples": [{
+								"ERROR": "Error",
+								"FAIL": "Fail",
+								"NOT_EVALUATED": "Not Evaluated",
+								"PASS": "Pass",
+								"PASS_WITH_WARNINGS": "Warning"
+							}],
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": true
+						}
+					},
+					"additionalProperties": false
+				},
+				"export_datetime": {
+					"$id": "#/properties/meta/properties/export_datetime",
+					"type": "string",
+					"format": "date-time",
+					"title": "Export DateTime",
+					"description": "Date and time this export was created.",
+					"examples": [
+						"2021-03-20T13:38:29.602"
+					]
+				},
+				"export_version": {
+					"$id": "#/properties/meta/properties/export_version",
+					"type": "integer",
+					"title": "Export Version",
+					"description": "Version of the export format this export complies with.",
+					"const": 1,
+					"examples": [
+						1
+					]
+				}
+			},
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
+}

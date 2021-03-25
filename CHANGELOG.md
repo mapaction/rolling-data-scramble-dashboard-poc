@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+* [#30] JSON Schema for export format
+
 ### Changed
 
 * [#81] Updating project dependencies

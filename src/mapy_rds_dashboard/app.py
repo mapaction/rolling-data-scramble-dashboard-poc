@@ -7,7 +7,13 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional
 
+try:
+    from importlib.resources import path as resource_path
+except ImportError:
+    from importlib_resources import path as resource_path
+
 from df2gspread import df2gspread as d2g
+from jsonschema import validate as jsonschema_validate
 from oauth2client import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
@@ -682,7 +688,8 @@ def prepare_export(
     :rtype dict
     :return: processes data ready for use in exports
     """
-    export_version: int = 1
+    export_format_version: int = 1
+    export_format_schema_name: str = "export_format_v1_schema.json"
 
     _operations: List[dict] = list()
     _operations_by_id: Dict[str, dict] = dict()
@@ -730,10 +737,10 @@ def prepare_export(
             }
         )
 
-    return {
+    export_data: Dict = {
         "meta": {
             "app_version": __version__,
-            "export_version": export_version,
+            "export_version": export_format_version,
             "export_datetime": datetime.utcnow().isoformat(timespec="milliseconds"),
             "display_labels": {
                 "result_types": {
@@ -764,6 +771,15 @@ def prepare_export(
             "summary_statistics": summary_evaluations,
         },
     }
+    with resource_path(
+        package="mapy_rds_dashboard", resource=export_format_schema_name
+    ) as export_format_schema_path:
+        with open(
+            str(export_format_schema_path), mode="r"
+        ) as export_format_schema_file:
+            export_format_schema: Dict = json.load(fp=export_format_schema_file)
+            jsonschema_validate(instance=export_data, schema=export_format_schema)
+    return export_data
 
 
 def export_json(export_data: dict, export_path: Path) -> None:
