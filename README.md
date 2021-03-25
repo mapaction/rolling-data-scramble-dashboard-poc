@@ -2,7 +2,7 @@
 
 Proof of concept dashboard for the status of MapAction Rolling Data Scrambles.
 
-[View Dashboard in Google Sheets](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/).
+[View Dashboard in Google Sheets](https://docs.google.com/spreadsheets/d/1UNvKDvhWxpPlEtYlSVtFy1QyTY0Ha07yThJ_bMXhzIM).
 
 ## Purpose
 
@@ -27,7 +27,7 @@ $ python -m mapy_rds_dashboard.app
 This will:
 
 * produce a `export.json` file in the current directory (this can be ignored but is useful for debugging)
-* update this [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/)
+* update this [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1UNvKDvhWxpPlEtYlSVtFy1QyTY0Ha07yThJ_bMXhzIM)
 
 ### Adding a new operation/country
 
@@ -147,7 +147,7 @@ A very simple JSON exporter is included to:
 #### Google Sheets exporter
 
 A more complex and useful exporter, which uses a Panda's data frame as the source for a
-[Google Docs spreadsheet](https://docs.google.com/spreadsheets/d/1MSXc-1mffyv_EtiXWvpu-cDc92UAutRkXVFV4ICILx8/).
+[Google Docs spreadsheet](https://docs.google.com/spreadsheets/d/1UNvKDvhWxpPlEtYlSVtFy1QyTY0Ha07yThJ_bMXhzIM).
 
 Tabs/sheets are included for:
 
