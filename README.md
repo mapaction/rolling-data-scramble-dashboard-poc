@@ -14,7 +14,7 @@ for further information.
 
 ## Status
 
-This is a Proof of Concept / alpha application. Its availability or correctness it should not be replied upon.
+This is a beta application. Its availability is on a best efforts basis.
 
 ## Usage
 
