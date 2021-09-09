@@ -130,6 +130,7 @@ config["google_drive_base_path"] = Path(
 )
 
 config["rds_operations_cmf_paths"] = [
+    Path("Shared drives/prepared-country-data/afghanistan"),
     Path("Shared drives/prepared-country-data/bangladesh"),
     Path("Shared drives/prepared-country-data/cameroon"),
     Path("Shared drives/prepared-country-data/dominica"),
