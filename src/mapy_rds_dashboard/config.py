@@ -151,6 +151,7 @@ config["rds_operations_cmf_paths"] = [
     Path("Shared drives/prepared-country-data/south-sudan"),
     Path("Shared drives/prepared-country-data/sri-lanka"),
     Path("Shared drives/prepared-country-data/vanuatu"),
+    Path("Shared drives/prepared-country-data/antigua-and-barbuda"),
 ]
 
 config["all_products_product_id"] = os.getenv(
