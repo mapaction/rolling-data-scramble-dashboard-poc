@@ -159,7 +159,7 @@ config["rds_operations_cmf_paths"] = [
     Path("Shared drives/prepared-country-data/venezuela"),
     Path("Shared drives/prepared-country-data/nigeria"),
     Path("Shared drives/prepared-country-data/iran"),
-    Path("Shared drives/prepared-country-data/nepal"),
+    Path("Shared drives/prepared-country-data/burundi"),
     Path("Shared drives/prepared-country-data/somalia"),
     Path("Shared drives/prepared-country-data/niger"),
     Path("Shared drives/prepared-country-data/brunei-darussalam"),
